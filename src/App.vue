@@ -1,24 +1,17 @@
 <template>
   <div id="app">
-    <!--div id="nav">
-      <router-link v-if="authenticated" to="/login" v-on:click.native="logout()" replace>Logout</router-link>
-    </div>
-    <router-view @authenticated="setAuthenticated" /-->
-    <PageHeader username="User"/>
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <PageHeader username="User" :authenticated="authenticated"/>
+    <router-view @authenticated="setAuthenticated" />
   </div>
 </template>
 
 <script>
 import PageHeader from './components/PageHeader.vue'
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'app',
   components: {
-    PageHeader,
-    HelloWorld
+    PageHeader
   },
   data() {
     return {
@@ -37,9 +30,6 @@ export default {
   methods: {
     setAuthenticated(status) {
       this.authenticated = status;
-    },
-    logout() {
-      this.authenticated = false;
     }
   }
 }

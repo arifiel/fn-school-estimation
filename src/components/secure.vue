@@ -21,6 +21,6 @@
         background-color: #FFFFFF;
         border: 1px solid #CCCCCC;
         padding: 20px;
-        margin-top: 10px;
+        margin-top: 50px;
     }
 </style>

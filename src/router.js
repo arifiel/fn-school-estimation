@@ -3,7 +3,6 @@ import VueRouter from 'vue-router'
 
 import LoginComponent from "./components/login.vue"
 import SecureComponent from "./components/secure.vue"
-import HelloWorldComponent from "./components/HelloWorld.vue"
 
 Vue.use(VueRouter)
 
@@ -12,8 +11,8 @@ export default new VueRouter({
         {
             path: '/',
             redirect: {
-                name: "HelloWorld",
-                component: HelloWorldComponent
+                name: "login",
+                component: LoginComponent
             }
         },
         {
@@ -27,4 +26,4 @@ export default new VueRouter({
             component: SecureComponent
         }
     ]
-  })
+})
