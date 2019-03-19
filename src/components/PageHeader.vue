@@ -22,8 +22,7 @@ export default {
     },
     methods: {
         logout() {
-            authenticated = false;
-            this.$emit('authenticated', false);
+            this.$emit('setAuthenticated', false);
         }
     }
 }
