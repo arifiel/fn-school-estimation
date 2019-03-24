@@ -1,76 +1,116 @@
 <template>
     <div class="header">
-        <img class="header__logo" alt="Estimation tool logo" src="../assets/epsilon.png">
-        <div class = "header__title">Estimation tool</div>
+        <img src="@/assets/epsilon.png" />
+        <div class="info optional">
+            <div>Estilamtion tool</div>
+        </div>
+        <div class="header__user_info optional_replacement">
+            {{username}}
+        </div>
         <div class="header__menu">
-            <div class="header__menu_content_wrapper" v-if="authenticated">
-                <img class="header__menu__logo" alt="Estimation tool logo" src="../assets/menu.png">
-                <div class="header__menu__elements">
-                    <router-link to="/login" v-on:click.native="logout()" replace>Logout</router-link>
-                </div>
+            <a href="#" @focus="onFocusMenu" @blur="onBlurMenu">
+                <img src="@/assets/menu.png" />
+            </a>
+            <div class="header__menu__items" v-if="menu_opened">
+                <router-link class="logout_button" tag="button" to="/login" @click="logout()">Logout</router-link>
             </div>
         </div>
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+const sleep = (milliseconds: number) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
+import { Component, Vue } from 'vue-property-decorator';
+import { AuthService } from '@/common/services/AuthService';
+
+export default Vue.extend({
     name: 'PageHeader',
-    props: {
-        authenticated: Boolean,
-        username: String
+    data() {
+        return {
+            menu_opened: false,
+        };
+    },
+    computed: {
+        username(): string {
+            const user = AuthService.getUser();
+            return user != null ? user.name : 'Unauthorized user!';
+        },
     },
     methods: {
         logout() {
-            this.$emit('setAuthenticated', false);
-        }
-    }
-}
+            AuthService.logout();
+            console.log('logout');
+
+        },
+        onFocusMenu() {
+            this.menu_opened = true;
+        },
+        onBlurMenu() {
+            sleep(100).then(() => {
+                this.menu_opened = false;
+            });
+        },
+    },
+});
 </script>
 
-<style scoped>
-.header {
-    width: 99vw;
-    padding: 4px;
-    display: flex;
-    height: 40px;
-    position: fixed;
-    top: 0;
-}
+<style lang="scss" scoped>
+    @import '@/common/styles/common.scss';
 
-.header__logo {
-    object-fit: contain;
-    flex-grow: 0;
-    width: 40px;
-}
+    .header {
+        height: 40px;        
+        width: 100%;
+        background-color: $element-background-color;
+        position: fixed;
+        top: 0;
+        display: flex;
 
-.header__title {
-    flex-grow: 1;
-}
+        & > img {
+            width: 40px;
+            filter: invert(100%);
+        }
 
-.header__menu {
-    position: relative;
-    display: inline-block;
-}
+        .info {
+            padding-top: 10px;
+            flex-grow: 1;
+        }
 
-.header__menu:hover .header__menu__elements {
-    display: block;
-}
+        .header__user_info {
+            padding-top: 10px;
+            padding-right: 10px;
+        }
 
-.header__menu__elements {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    margin-left: -160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    padding: 12px 16px;
-    z-index: 1;
-}
+        .header__menu {
+            align-self: right;
+            width: 50px;
 
-.header__menu__logo {
-    object-fit: contain;
-    flex-grow: 0;
-    width: 40px;
-}
+            img {
+                width: 40px;
+                filter: invert(100%);
+            }
+
+            .header__menu__items {
+                position: relative;
+                background-color: $element-background-color;
+                width: 100px;
+                left: -64px;
+                border: 1px solid #CCCCCC;
+                padding: 5px;
+
+                button {
+                    width: 100%;
+                    height: 30px;
+                }
+
+                .logout_button {
+                    background-color: $login-background-color;
+                }
+            }
+
+        }
+
+    }
 </style>
