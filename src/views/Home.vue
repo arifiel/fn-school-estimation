@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <PageHeader/>
+    <router-view/>
   </div>
 </template>
 
@@ -12,12 +13,14 @@ import PageHeader from '@/components/PageHeader.vue';
 export default Vue.extend({
   name: 'Home',
   components : {
-    PageHeader: PageHeader,
+    PageHeader,
   },
 });
 </script>
 
 <style lang="scss">
-
+  .home {
+    padding-top:50px;
+  }
 
 </style>

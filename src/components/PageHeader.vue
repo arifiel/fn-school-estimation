@@ -12,6 +12,8 @@
                 <img src="@/assets/menu.png" />
             </a>
             <div class="header__menu__items" v-if="menu_opened">
+                <router-link tag="button" to="/">CR List</router-link>
+                <router-link tag="button" to="/create">Create CR</router-link>
                 <router-link class="logout_button" tag="button" to="/login" @click="logout()">Logout</router-link>
             </div>
         </div>

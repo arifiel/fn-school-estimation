@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Login from '@/views/Login.vue';
+import Requirements from '@/views/Requirements.vue';
+import CreateCr from '@/views/CreateCr.vue';
+import Inspect from '@/views/Inspect.vue';
 import {AuthService} from '@/common/services/AuthService';
 import {RouteNames} from '@/router/RouteNames';
 
@@ -10,17 +13,33 @@ const router =  new Router({
   routes: [
     {
       path: '/login',
-      name: 'login',
+      name: RouteNames.Login,
       component: Login,
     },
     {
       path: '/',
-      name: 'home',
       // lazy-load
       component: () => import(/* webpackChunkName: "about" */ '@/views/Home.vue'),
       meta: {
         requiresAuth: true,
       },
+      children: [
+        {
+          path: '',
+          name: RouteNames.Requirements,
+          component: Requirements,
+        },
+        {
+          path: '/create',
+          name: RouteNames.Create,
+          component: CreateCr,
+        },
+        {
+          path: '/cr/:id/:action',
+          name: RouteNames.Inspect,
+          component: Inspect,
+        },
+      ],
     },
   ],
 });

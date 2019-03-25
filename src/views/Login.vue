@@ -37,7 +37,7 @@ export default Vue.extend({
     login() {
       AuthService.login(this.input.username, this.input.password);
       if (AuthService.isLoggedIn()) {
-        this.$router.push({name: RouteNames.Home});
+        this.$router.push({name: RouteNames.Requirements});
       }
     },
   },
@@ -97,6 +97,7 @@ export default Vue.extend({
         background-color: rgb(232, 240, 254);
         height: 40px;
         padding-left: 5px;
+        font-size: 100%;
       }
 
     }
