@@ -3,20 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "preserve": "tsc",
+    "serve": "vue-cli-service serve | node dist/js/src/server/server.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "express": "^4.16.4",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
+    "@types/express": "^4.16.1",
     "@types/jest": "^23.1.4",
     "@vue/cli-plugin-babel": "^3.5.0",
     "@vue/cli-plugin-e2e-nightwatch": "^3.5.0",
