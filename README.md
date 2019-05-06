@@ -1,4 +1,5 @@
 # fn-school-estimation-vue-app
+Some vuetify expressjs and axios whatsoever.
 
 ## Project setup
 ```
@@ -25,6 +26,17 @@ Unix
 ```
 ./run.sh
 ```
+
+## Credentials
+Currently, password not stored or checked by server.
+The following logins are presetted:
+- "aaa" and "zzz" (for "architect" role)
+- "bbb" (for "manager" role)
+- "ccc" and "ddd" (for "worker" role)
+
+## Created user
+New users are created with role 'worker'.
+Currently, there is no way to change it.
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
