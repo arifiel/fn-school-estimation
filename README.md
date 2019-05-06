@@ -1,38 +1,29 @@
-# fn-school-estimation-ts
+# fn-school-estimation-vue-app
 
 ## Project setup
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+## Run server app
 ```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
+npm run run-server
 ```
 
-### Run your tests
+## Run vue app
 ```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
+npm run run-vue
 ```
 
-### Run your end-to-end tests
+## Run server and vue app
+Windows
 ```
-npm run test:e2e
+run
 ```
 
-### Run your unit tests
+Unix
 ```
-npm run test:unit
+./run.sh
 ```
 
 ### Customize configuration
