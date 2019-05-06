@@ -5,6 +5,7 @@ import {RootState} from '@/store/types';
 import router from '@/router/router';
 import {ITask} from '@/common/interfaces/ITask';
 
+// TODO: all entities should have their own state, actions and service!!!
 export const mutations: MutationTree<RootState> = {
   setUser(state, payload: IUser) {
       state.user = payload;

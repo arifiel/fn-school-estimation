@@ -8,7 +8,7 @@
           <v-snackbar :color="'error'" red v-model="$store.state.loginError" top>
             <v-card-text class="subheading" > Incorrect username or password </v-card-text>
           </v-snackbar>
-          <v-card-text v-if="!isSignUp" class="subheading" > 
+          <v-card-text v-if="!isSignUp" class="subheading" >
             <span>Crate a new account</span>
             <v-form  @submit.prevent="login" ref="loginForm">
               <v-text-field v-model="input.username" label='Name' prepend-icon='person' :rules="[required(input.username)]"></v-text-field>
@@ -17,7 +17,7 @@
               <v-btn dark block type='submit' >Sign in</v-btn>
             </v-form>
           </v-card-text>
-          <v-card-text v-else class="subheading"> 
+          <v-card-text v-else class="subheading">
             <span>Log in to your account</span>
             <v-form @submit.prevent="signUp" ref="signUpForm">
               <v-text-field v-model="input.username" label='Name' prepend-icon='person' :rules="[required(input.username)]"></v-text-field>
@@ -46,7 +46,7 @@ import UrlHelper from '../common/util/UrlHelper';
 import ValidationRules from '../common/util/ValidationRules';
 
 export default Vue.extend({
-  name : 'Login',
+  name: 'Login',
   data() {
     return {
       isSignUp: false,
@@ -61,20 +61,20 @@ export default Vue.extend({
   },
   methods : {
     login() {
-      let username = this.input.username;
-      let password = this.input.password;
+      const username = this.input.username;
+      const password = this.input.password;
       if (!username || !password) {
         this.$refs.loginForm.validate()
         this.snackbar = true;
       } else {
-        let shouldStayLoggedIn = this.shouldStayLoggedIn;
+        const shouldStayLoggedIn = this.shouldStayLoggedIn;
         this.$store.dispatch('login', {username, password, shouldStayLoggedIn});
       }
     },
     signUp() {
-      let username = this.input.username;
-      let password = this.input.password;
-      let email = this.input.email;
+      const username = this.input.username;
+      const password = this.input.password;
+      const email = this.input.email;
       if (!username || !password || !email) {
         this.$refs.signUpForm.validate()
         this.snackbar = true;
@@ -87,10 +87,10 @@ export default Vue.extend({
     },
   },
   computed: {
-    required: function () { 
+    required: function () {
       return ValidationRules.required;
     },
-    email: function () { 
+    email: function () {
       return ValidationRules.email;
     },
   }

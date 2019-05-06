@@ -88,7 +88,7 @@
         </v-data-table>
       </v-card>
     </v-flex>
-  </v-layout>  
+  </v-layout>
 </template>
 
 <script lang="ts">
@@ -105,8 +105,9 @@ export default Vue.extend({
     action: String,
   },
   computed: {
-    crData: function () : ICr { 
+    crData: function () : ICr {
       if(this.$store.state.crList) {
+        // TODO: should be in its own state object, not getting from filtering array
         return this.$store.state.crList.find(cr => cr.id === this.id)
       }
     },
@@ -117,7 +118,7 @@ export default Vue.extend({
       }
       return [];
     },
-    headers : function () { 
+    headers : function () {
       var result = [];
       let smallScreen = this.$vuetify.breakpoint.xs;
       if(smallScreen) {

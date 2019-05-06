@@ -8,6 +8,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 export default Vue.extend({
-  name : 'Home',
+  name: 'Home',
 })
 </script>

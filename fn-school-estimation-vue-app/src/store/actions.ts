@@ -5,6 +5,8 @@ import {Credentials} from '@/store/types';
 import {RootState} from '@/store/types';
 import {IUser} from '@/common/interfaces/IUser';
 
+// TODO: all entities should have their own state, actions and service!!!
+// TODO: all actions connected to server requests should be async
 export const actions: ActionTree<RootState, RootState> = {
     login(store: ActionContext<RootState, any>, credentials: Credentials) {
       getToken(store, credentials);
@@ -29,6 +31,7 @@ export const actions: ActionTree<RootState, RootState> = {
     },
 };
 
+// TODO: all methods to connect to server should be in file "*.service.ts"
 function getToken(store: ActionContext<RootState, any>, credentials: Credentials) {
   axios.get(API_URLS.LOGIN, {params: {'login': credentials.username, 'password': credentials.password}})
   .then((response: any) => {
@@ -90,7 +93,7 @@ function createCr(store : ActionContext<RootState, any> , crdata: any) {
   var headers = {
     'Authorization': 'Bearer ' + store.state.token
   };
-  
+
   axios.post(API_URLS.CREATE_CR, {body: crdata}, {headers: {'Authorization': 'Bearer ' + store.state.token}})
   .then((response: any) => {
     loadCrList(store);
