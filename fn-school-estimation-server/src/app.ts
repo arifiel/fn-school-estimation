@@ -125,6 +125,15 @@ app.post('/api/add_cr', function (req:any, res:any) {
 
 app.post('/api/add_task', function (req:any, res:any) {
 
+  let newTask = {
+    id: taskIdCounter + '',
+    crId: req.body.body.cr_id,
+    title: req.body.body.title,
+    description: req.body.body.description,
+  } as ITask;
+
+  tasks.push(newTask);
+  taskIdCounter = taskIdCounter + 1;
 
   res.header('Access-Control-Allow-Origin', '*');
   res.send('Task created');

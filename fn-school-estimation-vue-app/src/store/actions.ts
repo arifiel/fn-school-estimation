@@ -25,7 +25,7 @@ export const actions: ActionTree<RootState, RootState> = {
       loadTasksForCr(store, crId);
     },
     createTask(store: ActionContext<RootState, any>, taskData: any) {
-      createTask(store, taskData, '123');
+      createTask(store, taskData);
     },
 };
 
@@ -93,10 +93,10 @@ function createCr(store : ActionContext<RootState, any> , crdata: any) {
   });
 }
 
-function createTask(store : ActionContext<RootState, any> , taskData: any, crId: string) {
-  axios.post(API_URLS.CREATE_TASK, {body: {'crId': crId, 'title': taskData.title, 'description': taskData.description}})
+function createTask(store : ActionContext<RootState, any> , taskData: any) {
+  axios.post(API_URLS.CREATE_TASK, {body: taskData}, {headers: {'Authorization': 'Bearer ' + store.state.token}})
   .then((response: any) => {
-    //getToken(store, credentials);
+    loadTasksForCr(store, taskData.cr_id);
   }, (error: any) => {
       console.log(error);
   });
