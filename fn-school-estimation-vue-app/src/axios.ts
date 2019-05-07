@@ -18,6 +18,6 @@ export default axios.create({
   headers: {
 		'Access-Control-Allow-Origin': '*',
     'Content-Type': 'application/json',
-    //'Authorization': 'Bearer ' + localStorage.token
+    'Authorization': 'Bearer ' + localStorage.token
   }
 });

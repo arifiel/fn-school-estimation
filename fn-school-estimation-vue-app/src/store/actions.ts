@@ -85,12 +85,6 @@ function createUser(store : ActionContext<RootState, any> , credentials: Credent
 }
 
 function createCr(store : ActionContext<RootState, any> , crdata: any) {
-  console.log(crdata);
-
-  var headers = {
-    'Authorization': 'Bearer ' + store.state.token
-  };
-  
   axios.post(API_URLS.CREATE_CR, {body: crdata}, {headers: {'Authorization': 'Bearer ' + store.state.token}})
   .then((response: any) => {
     loadCrList(store);

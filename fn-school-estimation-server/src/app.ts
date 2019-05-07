@@ -83,10 +83,9 @@ app.post('/api/signup', function (req:any, res:any) {
 });
 
 app.post('/api/add_cr', function (req:any, res:any) {
-  var username = accessTokenCache.get(req.body.headers.Authorization.replace('Bearer ', ''));
+  var username = accessTokenCache.get(req.header('Authorization').replace('Bearer ', ''));
   
   var foundUser = users.find(user => user.name === username) as IUser;
-
 
   let projectId = crs.filter(cr => cr.project.name === req.body.body.project.name).map(cr => cr.project.id) + '';
   let newCr = {
