@@ -200,6 +200,9 @@ export default Vue.extend({
       if(!task) {
         return undefined;
       }
+      if(!task.estimationList) {
+        return undefined;
+      }
       let estimation = task.estimationList.find(e => e.userId === this.$store.state.user.id);
       if(!estimation) {
         return undefined;
@@ -209,6 +212,9 @@ export default Vue.extend({
     },
     estimationList(task : ITask) {
       let result = this.crData.assigned as Array<any>;
+      if(!task.estimationList) {
+        return [];
+      }
       result.forEach(r => r.estimation = task.estimationList.find(e => e.userId === r.id).value)
       return result;
     },
@@ -247,7 +253,7 @@ export default Vue.extend({
       return ValidationRules.required;
     },
     crData: function () : ICr { 
-      if(this.$store.state.crList) {
+      if(!!this.$store.state.crList) {
         return this.$store.state.crList.find(cr => cr.id === this.id)
       }
     },

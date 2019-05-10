@@ -210,6 +210,7 @@ app.post('/api/add_cr', function (req:any, res:any) {
     crId: crIdCounter + '',
     title: req.body.body.task.title,
     description: req.body.body.task.description,
+    estimationList: [],
   } as ITask;
   
   tasks.push(newTask);
@@ -228,6 +229,7 @@ app.post('/api/add_task', function (req:any, res:any) {
     crId: req.body.body.cr_id,
     title: req.body.body.title,
     description: req.body.body.description,
+    estimationList: [],
   } as ITask;
 
   tasks.push(newTask);

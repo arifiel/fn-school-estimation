@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+	"preserve": "tsc",
     "serve": "node dist/js/app.js"
   },
   "author": "",
