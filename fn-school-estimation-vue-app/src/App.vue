@@ -3,7 +3,7 @@
     <v-toolbar app v-if="$store.state.loggedIn">
       <v-toolbar-title class="headline text-uppercase">
         <v-img class="logo-image" :src="getImageSrc('epsilon.png')"></v-img>
-        <span v-if='$vuetify.breakpoint.lg' class="display-1">Estimation tool</span>
+        <span v-if='!$vuetify.breakpoint.xs' class="display-1">Estimation tool</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <span v-if="$store.state.user" class="headline">{{$store.state.user.name}}</span>

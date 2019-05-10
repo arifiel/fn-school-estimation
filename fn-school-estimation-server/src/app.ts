@@ -2,6 +2,7 @@ import {IUser} from './IUser';
 import {ICr} from './ICr';
 import {CrStatus} from './CrStatus';
 import {ITask} from './ITask';
+import {Estimation} from './Estimation';
 
 var express = require('express');
 var jwt = require('jsonwebtoken');
@@ -54,12 +55,109 @@ app.get('/api/user', function (req:any, res:any) {
   res.send(foundUser);
 });
 
-app.get('/api/cr/:crId/tasks/', function (req:any, res:any) {
+app.get('/api/user_list', function (req:any, res:any) {
+  res.send(users);
+});
+
+app.get('/api/cr/:crId/tasks', function (req:any, res:any) {
   var crId = req.params.crId;
   console.log(crId);
   
   res.header('Access-Control-Allow-Origin', '*');
   res.send(tasks.filter(t => t.crId === crId));
+});
+
+app.delete('/api/task/:taskId', function (req:any, res:any) {
+  var taskId = req.params.taskId;
+  
+  let index = tasks.map(t => t.id).indexOf(taskId);
+  if(index > -1) {
+    tasks.splice(index, 1);
+  }
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.send("Task deleted");
+});
+
+app.post('/api/task/:taskId/estimate', function (req:any, res:any) {
+  var taskId = req.params.taskId;
+  console.log(taskId);
+  
+  if(!tasks.map(t => t.id).includes(taskId)) {
+    res.send("Task not found");
+    return;
+  }
+  var username = accessTokenCache.get(req.header('Authorization').replace('Bearer ', ''));
+  var foundUser = users.find(user => user.name === username) as IUser;
+  if(!foundUser) {
+    res.send("User not found");
+    return;
+  }
+
+  let task = tasks.filter(t => t.id == taskId)[0];
+  if(task.estimationList.map(e => e.userId).includes(foundUser.id)) {
+    // estimation exist
+    task.estimationList.filter(e => e.userId === foundUser.id)[0].value = req.body.body.estimation;
+  } else {
+    let newEstimation = {
+      userId: foundUser.id,
+      value: req.body.body.estimation,
+    } as Estimation;
+
+    task.estimationList.push(newEstimation);
+  }
+
+  if(task.estimationList.length > 1 ) {
+    let cr = crs.filter(cr => cr.id == task.crId)[0];
+    let allOk = tasks.filter(t => t.crId == task.crId).every(t => t.estimationList.length > 1)
+    if(allOk && !!cr && cr.status === CrStatus.Assigned) {
+      cr.status = CrStatus.WaitForMerge;
+    }
+  }
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.send("Task estimated");
+});
+
+app.post('/api/task/:taskId/merge_estimation', function (req:any, res:any) {
+  var taskId = req.params.taskId;
+  console.log(taskId);
+  
+  if(!tasks.map(t => t.id).includes(taskId)) {
+    res.send("Task not found");
+    return;
+  }
+
+  let task = tasks.filter(t => t.id == taskId)[0];
+  task.mergedEstimation = req.body.body.estimation;
+
+  if(!!task.mergedEstimation) {
+    let cr = crs.filter(cr => cr.id == task.crId)[0];
+    let allOk = tasks.filter(t => t.crId == task.crId).every(t => !!t.mergedEstimation)
+    if(allOk && !!cr && cr.status === CrStatus.WaitForMerge) {
+      cr.status = CrStatus.Merged;
+    }
+  }
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.send("Task estimated");
+});
+
+app.put('/api/cr/:crId/assignee', function (req:any, res:any) {
+  var crId = req.params.crId;
+  console.log(req.body.body);
+  let cr = crs.filter(cr => cr.id == crId)[0];
+  if(!!cr) {
+    cr.assigned = req.body.body;
+    if(req.body.body.length > 1 && cr.status === CrStatus.Approved) {
+      cr.status = CrStatus.Assigned;
+    } else if(req.body.body.length < 2 && cr.status === CrStatus.Assigned) {
+      cr.status = CrStatus.Approved;
+    }
+  }
+  
+  res.header('Access-Control-Allow-Origin', '*');
+  res.send('Assignee list updated for CR: ' + crId);
 });
 
 app.get('/api/cr', function (req:any, res:any) {
@@ -145,6 +243,39 @@ app.listen(5000, function () {
   console.log('Example app listening on port 5000!');
 });
 
+app.patch('/api/cr/:crId/close', function (req:any, res:any) {
+  var crId = req.params.crId;
+  
+  let cr = crs.filter(cr => cr.id === crId); 
+  if(!!cr[0]) {
+    cr[0].status = CrStatus.Closed;
+  }
+
+  res.send('CR closed');
+});
+
+app.patch('/api/cr/:crId/approve', function (req:any, res:any) {
+  var crId = req.params.crId;
+  
+  let cr = crs.filter(cr => cr.id === crId); 
+  if(!!cr[0]) {
+    cr[0].status = CrStatus.Approved;
+  }
+
+  res.send('CR approved');
+});
+
+app.patch('/api/cr/:crId/reject', function (req:any, res:any) {
+  var crId = req.params.crId;
+  
+  let cr = crs.filter(cr => cr.id === crId); 
+  if(!!cr[0]) {
+    cr[0].status = CrStatus.Rejected;
+  }
+
+  res.send('CR rejected');
+});
+
 function getUserList() : Array<IUser> {
   return [
     {
@@ -182,48 +313,56 @@ function getTaskList() : Array<ITask> {
       crId: '1',
       title: 'Task 1 title',
       description: 'Some description',
+      estimationList: [],
     },
     {
       id: '7',
       crId: '1',
       title: 'Task 7 title',
       description: 'Some description',
+      estimationList: [],
     },
     {
       id: '8',
       crId: '1',
       title: 'Task 8 title',
       description: 'Some description',
+      estimationList: [],
     },
     {
       id: '2',
       crId: '2',
       title: 'Task 3 title',
       description: 'Some description',
+      estimationList: [],
     },
     {
       id: '3',
       crId: '3',
       title: 'Task 3 title',
       description: 'Some description',
+      estimationList: [],
     },
     {
       id: '4',
       crId: '4',
       title: 'Task 4 title',
       description: 'Some description',
+      estimationList: [],
     },
     {
       id: '5',
       crId: '5',
       title: 'Task 5 title',
       description: 'Some description',
+      estimationList: [],
     },
     {
       id: '6',
       crId: '6',
       title: 'Task 6 title',
       description: 'Some description',
+      estimationList: [],
     }
   ]
 }

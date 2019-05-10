@@ -1,5 +1,10 @@
 <template>
   <v-layout align-center justify-center>
+    <CloseCr ref="closeCr"/>
+    <ApproveCr ref="approveCr"/>
+    <RejectCr ref="rejectCr"/>
+    <AddAssignee ref="addAssignee"/>
+
     <v-flex class='text-xs-center display-1'>
       <span>Requirements</span>
       <v-spacer></v-spacer>
@@ -110,9 +115,19 @@ import {Actions} from '../common/interfaces/Actions';
 import {ICr} from '../common/interfaces/ICr';
 import {CrStatus} from '../common/interfaces/CrStatus';
 import ValidationRules from '../common/util/ValidationRules';
+import CloseCr from '../components/CloseCr.vue';
+import ApproveCr from '../components/ApproveCr.vue';
+import RejectCr from '../components/RejectCr.vue';
+import AddAssignee from '../components/AddAssignee.vue';
 
 export default Vue.extend({
   name : 'Requirements',
+  components: {
+    CloseCr,
+    ApproveCr,
+    RejectCr,
+    AddAssignee,
+  },
   data () {
     return {
       cr_number: '',
@@ -156,7 +171,7 @@ export default Vue.extend({
       }
       let roles = this.$store.state.user.roles as Array<string>;
       //cr.status
-      var result = [Actions.Inspect]
+      var result = [];
       if(roles.includes('manager')) {
         switch(cr.status) {
           case CrStatus.WaitForApprove:
@@ -179,9 +194,14 @@ export default Vue.extend({
       if(roles.includes('worker')) {
         switch(cr.status) {
           case CrStatus.Assigned:
-            result.push(Actions.Estimate);
+            if(cr.assigned.map(u => u.id).includes(this.$store.state.user.id)) {
+              result.push(Actions.Estimate);
+            }
             break;
         }
+      }
+      if(! result.includes(Actions.Estimate) && ! result.includes(Actions.Merge)) {
+        result.push(Actions.Inspect);
       }
       return result;
     },
@@ -288,6 +308,24 @@ export default Vue.extend({
         case Actions.Inspect:
           this.$router.push('cr/' + cr.id + '/inspect')
           break;
+        case Actions.Estimate:
+          this.$router.push('cr/' + cr.id + '/estimate')
+          break;
+        case Actions.Merge:
+          this.$router.push('cr/' + cr.id + '/merge')
+          break;            
+        case Actions.Close:
+          this.$refs.closeCr.openDialog(cr.id);
+          break;
+        case Actions.Approve:
+          this.$refs.approveCr.openDialog(cr.id);
+          break;
+        case Actions.Reject:
+          this.$refs.rejectCr.openDialog(cr.id);
+          break;
+        case Actions.AddAssignee:
+          this.$refs.addAssignee.openDialog(cr.id);
+          break;
       }
     }
   },
@@ -323,6 +361,7 @@ export default Vue.extend({
         CrStatus.WaitForMerge,
         CrStatus.Merged,
         CrStatus.Closed,
+        CrStatus.Rejected,
       ];
     },
     projects : function () {

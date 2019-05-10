@@ -1,5 +1,9 @@
 <template>
   <v-layout align-center justify-center>
+    <RemoveTask ref="removeTask"/>
+    <EstimateTask ref="estimateTask"/>
+    <MergeEstimation ref="mergeEstimation"/>
+
     <v-flex class='text-xs-center display-1'>
       <span>Requirement description</span>
       <v-spacer></v-spacer>
@@ -33,7 +37,8 @@
                         <span>Jira link: {{crData.project.jiraLink}}</span>
                       </v-flex>
                       <v-flex class='crData' xs12 sm12 md12 >
-                        <span>Assignee list: </span>
+                        <span>Assignee list:</span>
+                        <span v-for="(assignee) in crData.assigned" :key="assignee.id"> {{assignee.name}}</span>
                       </v-flex>
                     </v-layout>
                   </v-container>
@@ -66,7 +71,8 @@
                     <span>Jira link: {{crData.project.jiraLink}}</span>
                   </v-flex>
                   <v-flex class='crData' xs12 sm12 md12 >
-                    <span>Assignee list: </span>
+                    <span>Assignee list:</span>
+                    <span v-for="(assignee) in crData.assigned" :key="assignee.id"> {{assignee.name}}</span>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -89,13 +95,10 @@
             <v-form  @submit.prevent="addTask" ref="newTaskForm">
               <v-card>
                 <v-card-title>
-                  <span class="headline">Create new CR</span>
+                  <span class="headline">Create new Task</span>
                 </v-card-title>
                 <v-card-text>
                   <v-card light>
-                    <v-card-title>
-                      <span class="title">Default task</span>
-                    </v-card-title>
                     <v-card-text>
                       <v-text-field v-model="editedItem.title" label="Title" :rules="[required(editedItem.title)]"></v-text-field>
                       <v-textarea v-model="editedItem.description" label="Description" :rules="[required(editedItem.description)]"></v-textarea>
@@ -122,7 +125,32 @@
           <template v-slot:items="props">
             <td class="text-xs-left">{{ props.item.id }}</td>
             <td class="text-xs-left">{{ props.item.title }}</td>
-            <td class="text-xs-left">{{ props.item.description }}</td>
+            <td v-if="!$vuetify.breakpoint.xs" class="text-xs-left">{{ props.item.description }}</td>
+            <td class="text-xs-left" v-if="isEstimation">
+              <v-btn icon @click="$refs.estimateTask.openDialog(props.item.id);" title='Estimate' :color="!estimation(props.item.id) ? 'blue' : 'green'">
+                <v-icon v-if="!estimation(props.item.id)">hourglass_empty</v-icon>
+                <span v-else v-text="estimation(props.item.id)"></span>
+              </v-btn>  
+            </td>
+            <td class="text-xs-left" v-if="isMerge">
+              <template v-for="estimator in estimationList(props.item)">
+                <div :key="estimator.id">
+                  <span v-text="estimator.estimation" class="title"></span> 
+                  <span v-if="!$vuetify.breakpoint.xs" v-text="estimator.estimation ? ' by ' : 'waiting for '"></span> 
+                  <span v-if="!$vuetify.breakpoint.xs" v-text="estimator.name"></span>
+                </div>
+              </template>
+            </td>
+            <td class="text-xs-right">
+              <v-btn v-if="isMerge" icon @click="$refs.mergeEstimation.openDialog(props.item.id);"
+                  title='Merege estimation' :color="!props.item.mergedEstimation ? 'blue' : 'green'">
+                <v-icon v-if="!props.item.mergedEstimation">merge_type</v-icon>
+                <span v-else v-text="props.item.mergedEstimation"></span>
+              </v-btn>  
+              <v-btn icon @click="$refs.removeTask.openDialog(props.item.id);" title='Remove task'>
+                <v-icon>delete</v-icon>
+              </v-btn>  
+            </td>
           </template>
 
         </v-data-table>
@@ -136,11 +164,19 @@ import { Component, Vue } from 'vue-property-decorator';
 import {Actions} from '../common/interfaces/Actions';
 import {ICr} from '../common/interfaces/ICr';
 import {ITask} from '../common/interfaces/ITask';
-import axios, {API_URLS} from '../axios';
+import {CrStatus} from '../common/interfaces/CrStatus';
 import ValidationRules from '../common/util/ValidationRules';
+import RemoveTask from '../components/RemoveTask.vue';
+import EstimateTask from '../components/EstimateTask.vue';
+import MergeEstimation from '../components/MergeEstimation.vue';
 
 export default Vue.extend({
   name : 'Inspect',
+  components: {
+    RemoveTask,
+    EstimateTask,
+    MergeEstimation,
+  },
   props: {
     id: String,
     action: String,
@@ -159,6 +195,23 @@ export default Vue.extend({
     }
   },
   methods: {
+    estimation(taskId : string) {
+      let task = this.taskList.filter(t => t.id === taskId)[0];
+      if(!task) {
+        return undefined;
+      }
+      let estimation = task.estimationList.find(e => e.userId === this.$store.state.user.id);
+      if(!estimation) {
+        return undefined;
+      }
+      return estimation.value;
+
+    },
+    estimationList(task : ITask) {
+      let result = this.crData.assigned as Array<any>;
+      result.forEach(r => r.estimation = task.estimationList.find(e => e.userId === r.id).value)
+      return result;
+    },
     reload() {
       if(!!this.id) {
         this.$store.dispatch('loadTasksForCr', this.id)
@@ -205,21 +258,49 @@ export default Vue.extend({
       }
       return [];
     },
+    isEstimation : function () {
+      return this.action === Actions.Estimate.toLowerCase();
+    },
+    isMerge : function () {
+      return this.action === Actions.Merge.toLowerCase();
+    },
+    isMergeAllowed : function () {
+      return this.isMerge && this.crData.status === CrStatus.WaitForMerge;
+    },
     headers : function () { 
       var result = [];
       let smallScreen = this.$vuetify.breakpoint.xs;
-      if(smallScreen) {
+      
+      if(this.isEstimation || this.isMerge) {
+        if(smallScreen) {
+          return  [
+            { text: 'ID', value: 'id' },
+            { text: 'Title', value: 'title' },
+            { text: 'Estimation', value: 'estimation', sortable: false },
+            { text: 'Actions', value: 'actions', sortable: false , align: 'right'},
+          ];
+        }
         return  [
-          { text: 'Task Number', value: 'id' },
+          { text: 'Task number', value: 'id' },
           { text: 'Title', value: 'title' },
           { text: 'Description', value: 'description', sortable: false},
+          { text: 'Estimation', value: 'estimation', sortable: false },
+          { text: 'Actions', value: 'actions', sortable: false , align: 'right'},
         ];
       }
-      return  [
-        { text: 'CR Number', value: 'id' },
-        { text: 'Title', value: 'title' },
-        { text: 'Description', value: 'description', sortable: false},
-      ];
+      if(smallScreen) {
+          return  [
+            { text: 'ID', value: 'id' },
+            { text: 'Title', value: 'title' },
+            { text: 'Actions', value: 'actions', sortable: false , align: 'right'},
+          ];
+        }
+        return  [
+          { text: 'Task number', value: 'id' },
+          { text: 'Title', value: 'title' },
+          { text: 'Description', value: 'description', sortable: false},
+          { text: 'Actions', value: 'actions', sortable: false, align: 'right'},
+        ];
     },
   },
   beforeMount: function () {

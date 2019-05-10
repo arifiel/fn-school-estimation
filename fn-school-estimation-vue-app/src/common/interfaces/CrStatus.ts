@@ -5,4 +5,5 @@ export const enum CrStatus {
     WaitForMerge = 'Wait for merge',
     Merged = 'Merged',
     Closed = 'Closed',
+    Rejected = 'Rejected',
 }

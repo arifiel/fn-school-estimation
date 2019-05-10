@@ -10,6 +10,9 @@ export const mutations: MutationTree<RootState> = {
       state.user = payload;
       router.push('/');
   },
+  setUserList(state, payload: Array<IUser>) {
+    state.userList = payload;
+},
   setToken(state, payload: string) {
     state.loggedIn = true;
     state.token = payload;

@@ -11,6 +11,7 @@ const store: StoreOptions<RootState> = ({
     loggedIn: !!localStorage.token,
     token: localStorage.token,
     user: undefined,
+    userList: undefined,
     crList: undefined,
     tasksForCr: undefined,
     loginError: false,

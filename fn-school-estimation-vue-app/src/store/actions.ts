@@ -3,7 +3,7 @@ import { ActionTree, ActionContext } from 'vuex';
 import axios, {API_URLS} from '@/axios';
 import {Credentials} from '@/store/types';
 import {RootState} from '@/store/types';
-import {IUser} from '@/common/interfaces/IUser';
+import {ITask} from '@/common/interfaces/ITask';
 
 export const actions: ActionTree<RootState, RootState> = {
     login(store: ActionContext<RootState, any>, credentials: Credentials) {
@@ -27,6 +27,30 @@ export const actions: ActionTree<RootState, RootState> = {
     createTask(store: ActionContext<RootState, any>, taskData: any) {
       createTask(store, taskData);
     },
+    closeCr(store: ActionContext<RootState, any>, crId: string) {
+      closeCr(store, crId);
+    },
+    approveCr(store: ActionContext<RootState, any>, crId: string) {
+      approveCr(store, crId);
+    },
+    rejectCr(store: ActionContext<RootState, any>, crId: string) {
+      rejectCr(store, crId);
+    },
+    getUserList(store: ActionContext<RootState, any>) {
+      getUserList(store);
+    },
+    updateAssigneeList(store: ActionContext<RootState, any>, data: any) {
+      updateAssigneeList(store, data);
+    },
+    removeTask(store: ActionContext<RootState, any>, taskId: string) {
+      removeTask(store, taskId);
+    },
+    estimate(store: ActionContext<RootState, any>, data: any) {
+      estimate(store, data);
+    },
+    mergeEstimation(store: ActionContext<RootState, any>, data: any) {
+      mergeEstimation(store, data);
+    },
 };
 
 function getToken(store: ActionContext<RootState, any>, credentials: Credentials) {
@@ -48,9 +72,19 @@ function getUser(store : ActionContext<RootState, any>) {
   .then((response: any) => {
     store.commit('setUser', response.data);
     store.commit('loginError', false);
+    getUserList(store);
   }, (error: any) => {
       console.log(error);
       store.commit('loginError', true);
+  });
+}
+
+function getUserList(store : ActionContext<RootState, any>) {
+  axios.get(API_URLS.USER_LIST, {headers: {'Authorization': 'Bearer ' + store.state.token}})
+  .then((response: any) => {
+    store.commit('setUserList', response.data);
+  }, (error: any) => {
+      console.log(error);
   });
 }
 
@@ -101,3 +135,88 @@ function createTask(store : ActionContext<RootState, any> , taskData: any) {
       console.log(error);
   });
 }
+
+function estimate(store : ActionContext<RootState, any> , estimationData: any) {
+  var crId = "-1";
+  let tasks = store.state.tasksForCr as Array<ITask>;
+  if(!!tasks) {
+    crId = tasks.filter(t => t.id === estimationData.taskId).map(t => t.crId)[0];
+  }
+  axios.post(API_URLS.ESTIMATE_TASK.replace('${taskId}', estimationData.taskId), {body: {'estimation': estimationData.estimation, }},
+    {headers: {'Authorization': 'Bearer ' + store.state.token}
+  })
+  .then((response: any) => {
+    loadTasksForCr(store, crId);
+    loadCrList(store);
+  }, (error: any) => {
+      console.log(error);
+  });
+}
+
+function mergeEstimation(store : ActionContext<RootState, any> , estimationData: any) {
+  var crId = "-1";
+  let tasks = store.state.tasksForCr as Array<ITask>;
+  if(!!tasks) {
+    crId = tasks.filter(t => t.id === estimationData.taskId).map(t => t.crId)[0];
+  }
+  axios.post(API_URLS.MERGE_ESTIMATION.replace('${taskId}', estimationData.taskId), {body: {'estimation': estimationData.estimation, }},
+    {headers: {'Authorization': 'Bearer ' + store.state.token}
+  })
+  .then((response: any) => {
+    loadTasksForCr(store, crId);
+    loadCrList(store);
+  }, (error: any) => {
+      console.log(error);
+  });
+}
+
+function removeTask(store : ActionContext<RootState, any> , taskId: string) {
+  var crId = "-1";
+  let tasks = store.state.tasksForCr as Array<ITask>;
+  if(!!tasks) {
+    crId = tasks.filter(t => t.id === taskId).map(t => t.crId)[0];
+  }
+  axios.delete(API_URLS.DELETE_TASK.replace('${taskId}', taskId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
+  .then((response: any) => {
+    loadTasksForCr(store, crId);
+  }, (error: any) => {
+      console.log(error);
+  });
+}
+
+function closeCr(store : ActionContext<RootState, any> , crId: string) {
+  axios.patch(API_URLS.CLOSE_CR.replace('${crId}', crId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
+  .then((response: any) => {
+    loadCrList(store);
+  }, (error: any) => {
+      console.log(error);
+  });
+}
+
+function approveCr(store : ActionContext<RootState, any> , crId: string) {
+  axios.patch(API_URLS.APPROVE_CR.replace('${crId}', crId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
+  .then((response: any) => {
+    loadCrList(store);
+  }, (error: any) => {
+      console.log(error);
+  });
+}
+
+function rejectCr(store : ActionContext<RootState, any> , crId: string) {
+  axios.patch(API_URLS.REJECT_CR.replace('${crId}', crId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
+  .then((response: any) => {
+    loadCrList(store);
+  }, (error: any) => {
+      console.log(error);
+  });
+}
+
+function updateAssigneeList(store : ActionContext<RootState, any> , data: any) {
+  axios.put(API_URLS.UPDATE_ASSIGNEE.replace('${crId}', data.crId), {body: data.assigned}, {headers: {'Authorization': 'Bearer ' + store.state.token}})
+  .then((response: any) => {
+    loadCrList(store);
+  }, (error: any) => {
+      console.log(error);
+  });
+}
+
