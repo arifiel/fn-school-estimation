@@ -5,10 +5,7 @@ import {ITask} from '@/common/interfaces/ITask';
 export interface RootState {
   loggedIn: boolean;
   token?: string;
-  //user?: IUser;
-  userList?: Array<IUser>;
   crList?: Array<ICr>;
-  tasksForCr?: Array<ITask>
   loginError: boolean;
 }
 

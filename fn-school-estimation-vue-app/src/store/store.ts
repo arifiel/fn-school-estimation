@@ -6,6 +6,7 @@ import {actions} from '@/store/actions';
 import { user } from './user/index';
 import { userList } from './user_list/index';
 import { cr } from './cr/index';
+import { tasksForCr } from './tasks_for_cr/index';
 
 Vue.use(Vuex);
 
@@ -15,7 +16,6 @@ const storeOptions: StoreOptions<RootState> = ({
     token: localStorage.token,
     loginError: false,
     crList: undefined,
-    tasksForCr: undefined,
   },
   mutations,
   actions,
@@ -23,6 +23,7 @@ const storeOptions: StoreOptions<RootState> = ({
     user,
     userList,
     cr,
+    tasksForCr,
   },
 });
 

@@ -56,16 +56,16 @@
       estimate() {
         const taskId = this.taskId;
         const estimation = this.estimation;
-        this.$store.dispatch('mergeEstimation', {'taskId' : taskId, 'estimation' : estimation});
+        this.$store.dispatch('tasksForCr/mergeEstimation', {'taskId' : taskId, 'estimation' : estimation});
         this.mergeEstimationDialog = false;
       },
     },
     computed: {
       estimationList: function() {
-        if(!this.$store.state.tasksForCr) {
+        if(!this.$store.state.tasksForCr.data) {
           return [];
         }
-        const task = this.$store.state.tasksForCr.find(t => t.id == this.taskId) as ITask;
+        const task = this.$store.state.tasksForCr.data.find(t => t.id == this.taskId) as ITask;
         if(!task) {
           return [];
         }

@@ -14,7 +14,6 @@ function loadUserList(store : ActionContext<UserListState, any>) {
   axios.get(API_URLS.USER_LIST, {headers: {'Authorization': 'Bearer ' + store.rootState.token}})
     .then((response: any) => {
       store.commit('data', response.data);
-      store.commit('error', false);
     }, (error: any) => {
         console.log(error);
         store.commit('error', true);

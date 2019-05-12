@@ -127,7 +127,7 @@
             <td class="text-xs-left">{{ props.item.title }}</td>
             <td v-if="!$vuetify.breakpoint.xs" class="text-xs-left">{{ props.item.description }}</td>
             <td class="text-xs-left" v-if="isEstimation">
-              <v-btn icon @click="$refs.estimateTask.openDialog(props.item.id);" title='Estimate' :color="!estimation(props.item.id) ? 'blue' : 'green'">
+              <v-btn icon @click="$refs.estimateTask.openDialog(props.item.id);" title='tasksForCr/Estimate' :color="!estimation(props.item.id) ? 'blue' : 'green'">
                 <v-icon v-if="!estimation(props.item.id)">hourglass_empty</v-icon>
                 <span v-else v-text="estimation(props.item.id)"></span>
               </v-btn>  
@@ -218,7 +218,7 @@ export default Vue.extend({
     },
     reload() {
       if(!!this.id) {
-        this.$store.dispatch('loadTasksForCr', this.id);
+        this.$store.dispatch('tasksForCr/load', this.id);
         this.$store.dispatch('cr/load', this.id);
       }
     },
@@ -230,7 +230,7 @@ export default Vue.extend({
         this.snackbar = true;
         return;
       } else {
-        this.$store.dispatch('createTask', {
+        this.$store.dispatch('tasksForCr/create', {
           cr_id: this.id,
           title: title,
           description: description,
@@ -248,6 +248,12 @@ export default Vue.extend({
     },
   },
   computed: {
+    allMerged: function() {
+      return this.taskList.every(t => !!t.mergedEstimation);
+    },
+    allEstimated: function() {
+      return this.taskList.every(t => !!this.estimation(t.id));
+    },
     required: function() { 
       return ValidationRules.required;
     },
@@ -259,8 +265,8 @@ export default Vue.extend({
       }
     },
     taskList: function(): Array<ITask> {
-      if(!!this.$store.state.tasksForCr) {
-        return this.$store.state.tasksForCr;
+      if(!!this.$store.state.tasksForCr.data) {
+        return this.$store.state.tasksForCr.data;
       }
       return [];
     },
@@ -314,9 +320,21 @@ export default Vue.extend({
         ];
     },
   },
+  watch : {
+    allMerged: function (val) {
+      if(val) {
+        this.$store.dispatch('cr/load', this.id);
+      }
+    },
+    allEstimated: function (val) {
+      if(val) {
+        this.$store.dispatch('cr/load', this.id);
+      }
+    },
+  },
   beforeMount: function () {
     if(!!this.id) {
-      this.$store.dispatch('loadTasksForCr', this.id);
+      this.$store.dispatch('tasksForCr/load', this.id);
       this.$store.dispatch('cr/load', this.id);
     }
   },

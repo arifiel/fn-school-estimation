@@ -54,7 +54,7 @@
       estimate() {
         let taskId = this.taskId;
         let estimation = this.estimation;
-        this.$store.dispatch('estimate', {'taskId' : taskId, 'estimation' : estimation});
+        this.$store.dispatch('tasksForCr/estimate', {'taskId' : taskId, 'estimation' : estimation});
         this.estimateTaskDialog = false;
       },
     },

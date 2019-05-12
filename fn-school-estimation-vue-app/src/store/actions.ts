@@ -18,12 +18,6 @@ export const actions: ActionTree<RootState, RootState> = {
     createCr(store: ActionContext<RootState, any>, crdata: any) {
       createCr(store, crdata);
     },
-    loadTasksForCr(store: ActionContext<RootState, any>, crId: string) {
-      loadTasksForCr(store, crId);
-    },
-    createTask(store: ActionContext<RootState, any>, taskData: any) {
-      createTask(store, taskData);
-    },
     closeCr(store: ActionContext<RootState, any>, crId: string) {
       closeCr(store, crId);
     },
@@ -35,15 +29,6 @@ export const actions: ActionTree<RootState, RootState> = {
     },
     updateAssigneeList(store: ActionContext<RootState, any>, data: any) {
       updateAssigneeList(store, data);
-    },
-    removeTask(store: ActionContext<RootState, any>, taskId: string) {
-      removeTask(store, taskId);
-    },
-    estimate(store: ActionContext<RootState, any>, data: any) {
-      estimate(store, data);
-    },
-    mergeEstimation(store: ActionContext<RootState, any>, data: any) {
-      mergeEstimation(store, data);
     },
 };
 
@@ -69,15 +54,6 @@ function loadCrList(store : ActionContext<RootState, any>) {
   });
 }
 
-function loadTasksForCr(store : ActionContext<RootState, any>, crId: string) {
-  axios.get(API_URLS.TASK_LIST_FOR_CR.replace('${crId}', crId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    store.commit('tasksForCr', response.data);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
 function createUser(store : ActionContext<RootState, any> , credentials: Credentials) {
   axios.post(API_URLS.SIGN_UP,
     {
@@ -94,63 +70,6 @@ function createCr(store : ActionContext<RootState, any> , crdata: any) {
   axios.post(API_URLS.CREATE_CR, {body: crdata}, {headers: {'Authorization': 'Bearer ' + store.state.token}})
   .then((response: any) => {
     loadCrList(store);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function createTask(store : ActionContext<RootState, any> , taskData: any) {
-  axios.post(API_URLS.CREATE_TASK, {body: taskData}, {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    loadTasksForCr(store, taskData.cr_id);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function estimate(store : ActionContext<RootState, any> , estimationData: any) {
-  var crId = "-1";
-  let tasks = store.state.tasksForCr as Array<ITask>;
-  if(!!tasks) {
-    crId = tasks.filter(t => t.id === estimationData.taskId).map(t => t.crId)[0];
-  }
-  axios.post(API_URLS.ESTIMATE_TASK.replace('${taskId}', estimationData.taskId), {body: {'estimation': estimationData.estimation, }},
-    {headers: {'Authorization': 'Bearer ' + store.state.token}
-  })
-  .then((response: any) => {
-    loadTasksForCr(store, crId);
-    loadCrList(store);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function mergeEstimation(store : ActionContext<RootState, any> , estimationData: any) {
-  var crId = "-1";
-  let tasks = store.state.tasksForCr as Array<ITask>;
-  if(!!tasks) {
-    crId = tasks.filter(t => t.id === estimationData.taskId).map(t => t.crId)[0];
-  }
-  axios.post(API_URLS.MERGE_ESTIMATION.replace('${taskId}', estimationData.taskId), {body: {'estimation': estimationData.estimation, }},
-    {headers: {'Authorization': 'Bearer ' + store.state.token}
-  })
-  .then((response: any) => {
-    loadTasksForCr(store, crId);
-    loadCrList(store);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function removeTask(store : ActionContext<RootState, any> , taskId: string) {
-  var crId = "-1";
-  let tasks = store.state.tasksForCr as Array<ITask>;
-  if(!!tasks) {
-    crId = tasks.filter(t => t.id === taskId).map(t => t.crId)[0];
-  }
-  axios.delete(API_URLS.DELETE_TASK.replace('${taskId}', taskId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    loadTasksForCr(store, crId);
   }, (error: any) => {
       console.log(error);
   });

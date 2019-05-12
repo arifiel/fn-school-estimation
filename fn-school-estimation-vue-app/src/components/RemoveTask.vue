@@ -34,7 +34,7 @@
         this.removeTaskDialog = true;
       },
       closeCr() {
-        this.$store.dispatch('removeTask', this.taskId);
+        this.$store.dispatch('tasksForCr/remove', this.taskId);
         this.removeTaskDialog = false;
       },
     }

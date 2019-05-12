@@ -13,12 +13,8 @@ export const mutations: MutationTree<RootState> = {
   setCrLisr(state, payload: Array<ICr>) {
     state.crList = payload;
   },
-  tasksForCr(state, payload: Array<ITask>) {
-    state.tasksForCr = payload;
-  },
   logout(state) {
     state.loggedIn = false;
-    //state.user = undefined;
     state.token = undefined;
     localStorage.removeItem('token');
     router.push('/login');
