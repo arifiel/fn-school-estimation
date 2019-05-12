@@ -135,7 +135,7 @@
             <td class="text-xs-left" v-if="isMerge">
               <template v-for="estimator in estimationList(props.item)">
                 <div :key="estimator.id">
-                  <span v-text="estimator.estimation" class="title"></span> 
+                  <span v-text="!!estimator.estimation ? estimator.estimation.value : ''" class="title"></span> 
                   <span v-if="!$vuetify.breakpoint.xs" v-text="estimator.estimation ? ' by ' : 'waiting for '"></span> 
                   <span v-if="!$vuetify.breakpoint.xs" v-text="estimator.name"></span>
                 </div>
@@ -213,7 +213,7 @@ export default Vue.extend({
       if(!task.estimationList) {
         return [];
       }
-      result.forEach(r => r.estimation = task.estimationList.find(e => e.userId === r.id).value);
+      result.forEach(r => r.estimation = task.estimationList.find(e => e.userId === r.id));
       return result;
     },
     reload() {

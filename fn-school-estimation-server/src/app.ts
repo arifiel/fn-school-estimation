@@ -13,6 +13,9 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.listen(5000, function () {
+  console.log('Example app listening on port 5000!');
+});
 
 var accessTokenCache = new CacheClass();
 var refreshTokenCache = new CacheClass();
@@ -33,8 +36,8 @@ Login.users = User.users;
 app.get('/', HelloWorld.helloWorld);
 app.get('/api/aouth/token', Login.login);
 
+app.post('/api/signup', User.addUser);
 app.get('/api/user', User.getUser);
-
 app.get('/api/user_list', User.getUserList);
 
 app.get('/api/cr/:crId/tasks', function (req:any, res:any) {
@@ -143,21 +146,6 @@ app.get('/api/cr', function (req:any, res:any) {
   res.send(crs);
 });
 
-app.post('/api/signup', function (req:any, res:any) {
-  console.log(req.body.body.login);
-  let newUser = {
-    id: idCounter + '',
-    name: req.body.body.login,
-    roles: ['worker']
-  } as IUser;
-  
-  idCounter = idCounter + 1;  
-  User.users.push(newUser);
-  
-  res.header('Access-Control-Allow-Origin', '*');
-  res.send('User created');
-});
-
 app.post('/api/add_cr', function (req:any, res:any) {
   var username = accessTokenCache.get(req.header('Authorization').replace('Bearer ', ''));
   
@@ -218,10 +206,6 @@ app.post('/api/add_task', function (req:any, res:any) {
 });
 
 app.use('/images', express.static('images'));
-
-app.listen(5000, function () {
-  console.log('Example app listening on port 5000!');
-});
 
 app.patch('/api/cr/:crId/close', function (req:any, res:any) {
   var crId = req.params.crId;
