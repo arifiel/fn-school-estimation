@@ -4,6 +4,7 @@
     <ApproveCr ref="approveCr"/>
     <RejectCr ref="rejectCr"/>
     <AddAssignee ref="addAssignee"/>
+    <AddCr ref="addCr"/>
 
     <v-flex class='text-xs-center display-1'>
       <span>Requirements</span>
@@ -34,53 +35,13 @@
 
           <v-card-text class="text-xs-right">
             <v-layout row>
-              <v-dialog v-if='isArchitect' v-model="dialog" max-width="500px">
-                <template v-slot:activator="{ on }">
-                  <v-btn icon class="mb-2" v-on="on" title='Add CR'>
-                    <v-icon large>add_circle</v-icon>
-                  </v-btn>
-                </template>
-                <v-form  @submit.prevent="addCr" ref="newCrForm">
-                  <v-card>
-                    <v-card-title>
-                      <span class="headline">Create new CR</span>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-card light>
-                        <v-card-title>
-                          <span class="title">CR information</span>
-                        </v-card-title>
-                        <v-card-text>
-                          <v-text-field v-model="editedItem.title" label="Title" :rules="[required(editedItem.title)]"></v-text-field>
-                          <v-autocomplete :items='projects' v-model="editedItem.project.name" label="Project" :rules="[required(editedItem.project.name)]"></v-autocomplete>
-                          <v-autocomplete :items='versions' v-model="editedItem.project.version" label="Version" :rules="[required(editedItem.project.version)]"></v-autocomplete>
-                          <v-text-field v-model="editedItem.jiraLink" label="Jira Link"></v-text-field>
-                        </v-card-text>
-                      </v-card>
-                      <v-card light>
-                        <v-card-title>
-                          <span class="title">Default task</span>
-                        </v-card-title>
-                        <v-card-text>
-                          <v-text-field v-model="editedItem.task.title" label="Title" :rules="[required(editedItem.task.title)]"></v-text-field>
-                          <v-textarea v-model="editedItem.task.description" label="Description" :rules="[required(editedItem.task.description)]"></v-textarea>
-                        </v-card-text>
-                      </v-card>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-card-text class="text-xs-right">
-                        <v-spacer></v-spacer>
-                        <v-btn light type='submit'>Save</v-btn>
-                        <v-btn @click="close">Cancel</v-btn>
-                      </v-card-text>
-                    </v-card-actions>
-                  </v-card>
-                </v-form>  
-              </v-dialog>
-              <v-spacer v-if='isArchitect'></v-spacer>
-              <v-btn icon @click="reload" title='Reload CR list'>
-                  <v-icon large>cached</v-icon>
+              <v-btn icon class="mb-2" @click="$refs.addCr.openDialog();" title='Add CR'>
+                <v-icon large>add_circle</v-icon>
               </v-btn>
+              <v-spacer v-if='isArchitect'></v-spacer>
+                <v-btn icon @click="reload" title='Reload CR list'>
+                  <v-icon large>cached</v-icon>
+                </v-btn>
               <v-spacer></v-spacer>
               <v-btn icon @click="clearFilters" title='Clear search filters'>
                 <v-icon large>clear</v-icon>
@@ -114,11 +75,13 @@ import { Vue } from 'vue-property-decorator';
 import {Actions} from '../common/interfaces/Actions';
 import {ICr} from '../common/interfaces/ICr';
 import {CrStatus} from '../common/interfaces/CrStatus';
+
 import ValidationRules from '../common/util/ValidationRules';
 import CloseCr from '../components/CloseCr.vue';
 import ApproveCr from '../components/ApproveCr.vue';
 import RejectCr from '../components/RejectCr.vue';
 import AddAssignee from '../components/AddAssignee.vue';
+import AddCr from '../components/AddCr.vue';
 
 export default Vue.extend({
   name : 'Requirements',
@@ -127,37 +90,13 @@ export default Vue.extend({
     ApproveCr,
     RejectCr,
     AddAssignee,
+    AddCr,
   },
   data: () => ({
     cr_number: '',
     cr_status: '',
     cr_project: '',
     cr_title: '',
-    dialog: false,
-    defaultItem: {
-      title:'',
-      project: {
-        name: '',
-        version: '',
-      },
-      jiraLink:'',
-      task: {
-        title: '',
-        description: '',
-      },
-    },
-    editedItem: {
-      title:'',
-      project: {
-        name: '',
-        version: '',
-      },
-      jiraLink:'',
-      task: {
-        title: '',
-        description: '',
-      },
-    },
   }),
   methods: {
     formatDate(date: string): String {
@@ -246,42 +185,6 @@ export default Vue.extend({
     },
     reload() {
       this.$store.dispatch('loadCrList');
-    },
-    addCr() {
-      //this.$store.dispatch('loadCrList');
-      const title = this.editedItem.title;
-      const project_name = this.editedItem.project.name;
-      const project_version = this.editedItem.project.version;
-      const jiraLink = this.editedItem.jiraLink;
-      const task_title = this.editedItem.task.title;
-      const task_description = this.editedItem.task.description;
-      if (!title || !project_name || !project_version || !task_title || !task_description) {
-        this.$refs.newCrForm.validate();
-        this.snackbar = true;
-        return;
-      } else {
-        this.$store.dispatch('createCr', {
-          title: title,
-          project: {
-            name: project_name,
-            version: project_version,
-          },
-          jiraLink:jiraLink,
-          task: {
-            title: task_title,
-            description: task_description,
-          },
-        });
-      }
-      this.close();
-    },
-    close() {
-      this.dialog = false;
-      this.$refs.newCrForm.reset();
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
     },
     clearFilters() {
       this.cr_number = '';
