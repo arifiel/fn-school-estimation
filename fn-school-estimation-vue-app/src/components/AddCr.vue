@@ -17,6 +17,7 @@
               <v-text-field v-model="editedItem.jiraLink" label="Jira Link"></v-text-field>
             </v-card-text>
           </v-card>
+          <br/>
           <v-card light>
             <v-card-title>
               <span class="title">Default task</span>

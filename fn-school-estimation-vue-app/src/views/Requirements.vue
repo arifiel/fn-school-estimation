@@ -35,7 +35,7 @@
 
           <v-card-text class="text-xs-right">
             <v-layout row>
-              <v-btn icon class="mb-2" @click="$refs.addCr.openDialog();" title='Add CR'>
+              <v-btn v-if='isArchitect' icon class="mb-2" @click="$refs.addCr.openDialog();" title='Add CR'>
                 <v-icon large>add_circle</v-icon>
               </v-btn>
               <v-spacer v-if='isArchitect'></v-spacer>
@@ -246,8 +246,8 @@ export default Vue.extend({
         { text: 'CR Number', value: 'id' },
         { text: 'Title', value: 'title' },
         { text: 'Status', value: 'status' },
-        { text: 'Created by', value: 'owner' },
-        { text: 'Project', value: 'project' },
+        { text: 'Created by', value: 'owner.name' },
+        { text: 'Project', value: 'project.name' },
         { text: 'Version', value: 'version' },
         { text: 'Created at', value: 'created_at'},
         { text: 'Actions', value: 'actions', sortable: false},

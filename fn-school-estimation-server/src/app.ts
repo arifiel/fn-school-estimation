@@ -5,59 +5,37 @@ import {ITask} from './ITask';
 import {Estimation} from './Estimation';
 
 var express = require('express');
-var jwt = require('jsonwebtoken');
 var CacheClass = require('memory-cache').Cache;
 var cors = require('cors');
 var bodyParser = require('body-parser');
 
+var app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+var accessTokenCache = new CacheClass();
+var refreshTokenCache = new CacheClass();
+var crs = getCrList();
+var tasks = getTaskList();
 var idCounter = 5;
 var crIdCounter = 7;
 var taskIdCounter = 10;
 
-var app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-var accessTokenCache = new CacheClass();
-var refreshTokenCache = new CacheClass();
+let HelloWorld = require('./modules/HelloWorld');
+let User = require('./modules/User');
+User.accessTokenCache = accessTokenCache;
+let Login = require('./modules/Login');
+Login.accessTokenCache = accessTokenCache;
+Login.users = User.users;
 
-var users = getUserList();
-var crs = getCrList();
-var tasks = getTaskList();
 
-app.use(cors());
+app.get('/', HelloWorld.helloWorld);
+app.get('/api/aouth/token', Login.login);
 
-app.get('/', function (req:any, res:any) {
-  res.send('Hello World!');
-});
+app.get('/api/user', User.getUser);
 
-app.get('/api/aouth/token', function (req:any, res:any) {
-  var password = req.query.password;
-  var login = req.query.login;
-  var foundUser = users.find(user => user.name === login);
-  if(!foundUser) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.status(401).send("Incorrerct credentials");
-    return;
-  }
-  console.log(login);
-  console.log(password);
-  var access_token = jwt.sign({'login': login}, password);
-  console.log(access_token);
-  res.header('Access-Control-Allow-Origin', '*');
-  res.send(access_token);
-  accessTokenCache.put(access_token, login);
-});
-
-app.get('/api/user', function (req:any, res:any) {
-  var username = accessTokenCache.get(req.header('Authorization').replace('Bearer ', ''));
-  var foundUser = users.find(user => user.name === username);
-  res.header('Access-Control-Allow-Origin', '*');
-  res.send(foundUser);
-});
-
-app.get('/api/user_list', function (req:any, res:any) {
-  res.send(users);
-});
+app.get('/api/user_list', User.getUserList);
 
 app.get('/api/cr/:crId/tasks', function (req:any, res:any) {
   var crId = req.params.crId;
@@ -88,7 +66,7 @@ app.post('/api/task/:taskId/estimate', function (req:any, res:any) {
     return;
   }
   var username = accessTokenCache.get(req.header('Authorization').replace('Bearer ', ''));
-  var foundUser = users.find(user => user.name === username) as IUser;
+  var foundUser = (User.users as Array<IUser>).find(user => user.name === username) as IUser;
   if(!foundUser) {
     res.send("User not found");
     return;
@@ -174,7 +152,7 @@ app.post('/api/signup', function (req:any, res:any) {
   } as IUser;
   
   idCounter = idCounter + 1;  
-  users.push(newUser);
+  User.users.push(newUser);
   
   res.header('Access-Control-Allow-Origin', '*');
   res.send('User created');
@@ -183,7 +161,7 @@ app.post('/api/signup', function (req:any, res:any) {
 app.post('/api/add_cr', function (req:any, res:any) {
   var username = accessTokenCache.get(req.header('Authorization').replace('Bearer ', ''));
   
-  var foundUser = users.find(user => user.name === username) as IUser;
+  var foundUser = (User.users as Array<IUser>).find(user => user.name === username) as IUser;
 
   let projectId = crs.filter(cr => cr.project.name === req.body.body.project.name).map(cr => cr.project.id) + '';
   let newCr = {
@@ -277,36 +255,6 @@ app.patch('/api/cr/:crId/reject', function (req:any, res:any) {
 
   res.send('CR rejected');
 });
-
-function getUserList() : Array<IUser> {
-  return [
-    {
-      id: '0',
-      name: 'zzz',
-      roles: ['architect']
-    },
-    {
-      id: '1',
-      name: 'aaa',
-      roles: ['architect']
-    },
-    {
-      id: '2',
-      name: 'bbb',
-      roles: ['manager']
-    },
-    {
-      id: '3',
-      name: 'ccc',
-      roles: ['worker']
-    },
-    {
-      id: '4',
-      name: 'ddd',
-      roles: ['worker']
-    },
-  ];
-};
 
 function getTaskList() : Array<ITask> {
   return [
