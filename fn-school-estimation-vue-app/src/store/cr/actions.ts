@@ -20,6 +20,9 @@ export const actions: ActionTree<CrState, RootState> = {
     reject(store: ActionContext<CrState, any>, crId: string) {
       rejectCr(store, crId);
     },
+    updateAssigneeList(store: ActionContext<CrState, any>, data: any) {
+      updateAssigneeList(store, data);
+    },
 };
 
 function loadCr(store : ActionContext<CrState, any>, crId: any) {
@@ -74,5 +77,15 @@ function rejectCr(store : ActionContext<CrState, any> , crId: string) {
   }, (error: any) => {
       console.log(error);
       store.commit('error', true);
+  });
+}
+
+function updateAssigneeList(store : ActionContext<CrState, any> , data: any) {
+  store.commit('loading', true);
+  axios.put(API_URLS.UPDATE_ASSIGNEE.replace('${crId}', data.crId), {body: data.assigned}, {headers: {'Authorization': 'Bearer ' + store.rootState.token}})
+  .then((response: any) => {
+    store.commit('loading', false);
+  }, (error: any) => {
+      console.log(error);
   });
 }

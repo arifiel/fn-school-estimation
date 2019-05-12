@@ -86,7 +86,7 @@ import {IUserReference} from '../common/interfaces/IUserReference';
     methods: {
       openDialog(crId: string) {
         this.crId = crId;
-        this.assigned = Object.assign([], this.$store.state.crList.filter(cr => cr.id === crId)[0].assigned);
+        this.assigned = Object.assign([], this.$store.state.crList.data.filter(cr => cr.id === crId)[0].assigned);
         this.closeCrDialog = true;
       },
       removeAssignee(item: IUserReference) {
@@ -102,7 +102,7 @@ import {IUserReference} from '../common/interfaces/IUserReference';
       addAssignees() {
         const assigned = this.assigned;
         const crId = this.crId;
-        this.$store.dispatch('updateAssigneeList', {'crId': crId, 'assigned' : assigned});
+        this.$store.dispatch('cr/updateAssigneeList', {'crId': crId, 'assigned' : assigned});
         this.closeCrDialog = false;
       },
     }

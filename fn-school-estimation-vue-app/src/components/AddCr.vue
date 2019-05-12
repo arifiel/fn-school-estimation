@@ -78,14 +78,14 @@ import ValidationRules from '../common/util/ValidationRules';
         return ValidationRules.required;
       },
       projects: function() {
-        var crList = this.$store.state.crList as Array<ICr>;
+        var crList = this.$store.state.crList.data as Array<ICr>;
         if(!crList) {
           return [];
         }
         return crList.map(cr => cr.project.name);
       },
       versions: function() {
-        var crList = this.$store.state.crList as Array<ICr>;
+        var crList = this.$store.state.crList.data as Array<ICr>;
         if(!crList || !this.editedItem.project.name) {
           return [];
         }

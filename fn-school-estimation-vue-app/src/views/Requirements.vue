@@ -184,7 +184,7 @@ export default Vue.extend({
       return 'mail';
     },
     reload() {
-      this.$store.dispatch('loadCrList');
+      this.$store.dispatch('crList/load');
     },
     clearFilters() {
       this.cr_number = '';
@@ -193,7 +193,7 @@ export default Vue.extend({
       this.cr_title = '';
     },
     filterdItems() {
-      var result = this.$store.state.crList as Array<ICr>;
+      var result = this.$store.state.crList.data as Array<ICr>;
       if(!result) {
         return [];
       }
@@ -268,14 +268,14 @@ export default Vue.extend({
       ];
     },
     projects: function() {
-      var crList = this.$store.state.crList as Array<ICr>;
+      var crList = this.$store.state.crList.data as Array<ICr>;
       if(!crList) {
         return [];
       }
       return crList.map(cr => cr.project.name);
     },
     versions: function() {
-      var crList = this.$store.state.crList as Array<ICr>;
+      var crList = this.$store.state.crList.data as Array<ICr>;
       if(!crList || !this.editedItem.project.name) {
         return [];
       }
@@ -295,12 +295,12 @@ export default Vue.extend({
   watch : {
     crStateUpdating: function (val) {
       if(!val) {
-        this.$store.dispatch('loadCrList');
+        this.$store.dispatch('crList/load');
       }
     },
   },
   beforeMount: function() {
-    this.$store.dispatch('loadCrList');
+    this.$store.dispatch('crList/load');
   },
 })
 </script>
