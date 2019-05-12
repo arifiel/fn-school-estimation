@@ -88,7 +88,7 @@ app.post('/api/task/:taskId/estimate', function (req:any, res:any) {
     task.estimationList.push(newEstimation);
   }
 
-  if(task.estimationList.length > 1 ) {
+  if(task.estimationList.length >= 1 ) {
     let cr = crs.filter(cr => cr.id == task.crId)[0];
     let allOk = tasks.filter(t => t.crId == task.crId).every(t => t.estimationList.length > 1)
     if(allOk && !!cr && cr.status === CrStatus.Assigned) {
@@ -144,6 +144,26 @@ app.put('/api/cr/:crId/assignee', function (req:any, res:any) {
 app.get('/api/cr', function (req:any, res:any) {
   res.header('Access-Control-Allow-Origin', '*');
   res.send(crs);
+});
+
+app.get('/api/cr/:crId', function (req:any, res:any) {
+  var crId = req.params.crId;
+
+  let cr = crs.filter(cr => cr.id === crId); 
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.send(cr[0]);
+});
+
+app.patch('/api/cr/:crId/close', function (req:any, res:any) {
+  var crId = req.params.crId;
+  
+  let cr = crs.filter(cr => cr.id === crId); 
+  if(!!cr[0]) {
+    cr[0].status = CrStatus.Closed;
+  }
+
+  res.send('CR closed');
 });
 
 app.post('/api/add_cr', function (req:any, res:any) {

@@ -9,6 +9,7 @@ export enum API_URLS{
   USER = '/user',
   USER_LIST = '/user_list',
   CR_LIST = '/cr',
+  CR = '/cr/${crId}',
   TASK_LIST_FOR_CR = '/cr/${crId}/tasks',
   CREATE_CR = '/add_cr',
   CREATE_TASK = '/add_task',

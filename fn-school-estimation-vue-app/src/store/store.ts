@@ -5,6 +5,7 @@ import {mutations} from '@/store/mutations';
 import {actions} from '@/store/actions';
 import { user } from './user/index';
 import { userList } from './user_list/index';
+import { cr } from './cr/index';
 
 Vue.use(Vuex);
 
@@ -20,7 +21,8 @@ const storeOptions: StoreOptions<RootState> = ({
   actions,
   modules: {
     user,
-    userList
+    userList,
+    cr,
   },
 });
 

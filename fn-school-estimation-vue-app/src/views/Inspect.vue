@@ -142,7 +142,7 @@
               </template>
             </td>
             <td class="text-xs-right">
-              <v-btn v-if="isMerge" icon @click="$refs.mergeEstimation.openDialog(props.item.id);"
+              <v-btn v-if="isMergeAllowed" icon @click="$refs.mergeEstimation.openDialog(props.item.id);"
                   title='Merege estimation' :color="!props.item.mergedEstimation ? 'blue' : 'green'">
                 <v-icon v-if="!props.item.mergedEstimation">merge_type</v-icon>
                 <span v-else v-text="props.item.mergedEstimation"></span>
@@ -219,6 +219,7 @@ export default Vue.extend({
     reload() {
       if(!!this.id) {
         this.$store.dispatch('loadTasksForCr', this.id);
+        this.$store.dispatch('cr/load', this.id);
       }
     },
     addTask() {
@@ -251,12 +252,13 @@ export default Vue.extend({
       return ValidationRules.required;
     },
     crData: function(): ICr { 
-      if(!!this.$store.state.crList) {
-        return this.$store.state.crList.find(cr => cr.id === this.id);
+      if(!!this.$store.state.cr.data) {
+        return this.$store.state.cr.data;
+      } else {
+        return {} as ICr;
       }
     },
     taskList: function(): Array<ITask> {
-      //return this.$store.dispatch('loadTasksForCr', this.id);
       if(!!this.$store.state.tasksForCr) {
         return this.$store.state.tasksForCr;
       }
@@ -266,10 +268,15 @@ export default Vue.extend({
       return this.action === Actions.Estimate.toLowerCase();
     },
     isMerge: function() {
-      return this.action === Actions.Merge.toLowerCase();
+      console.log(this.crData.status);
+      
+      return this.action === Actions.Merge.toLowerCase() 
+        || (this.crData.status == CrStatus.Assigned && this.$store.state.user.data.roles.includes('manager'));
     },
     isMergeAllowed: function() {
-      return this.isMerge && this.crData.status === CrStatus.WaitForMerge;
+      console.log(this.crData.status);
+      
+      return this.action === Actions.Merge.toLowerCase();
     },
     headers: function() { 
       var result = [];
@@ -310,6 +317,7 @@ export default Vue.extend({
   beforeMount: function () {
     if(!!this.id) {
       this.$store.dispatch('loadTasksForCr', this.id);
+      this.$store.dispatch('cr/load', this.id);
     }
   },
 })
