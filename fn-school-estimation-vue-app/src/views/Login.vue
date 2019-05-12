@@ -61,22 +61,22 @@ export default Vue.extend({
   },
   methods : {
     login() {
-      let username = this.input.username;
-      let password = this.input.password;
+      const username = this.input.username;
+      const password = this.input.password;
       if (!username || !password) {
-        this.$refs.loginForm.validate()
+        this.$refs.loginForm.validate();
         this.snackbar = true;
       } else {
-        let shouldStayLoggedIn = this.shouldStayLoggedIn;
+        const shouldStayLoggedIn = this.shouldStayLoggedIn;
         this.$store.dispatch('login', {username, password, shouldStayLoggedIn});
       }
     },
     signUp() {
-      let username = this.input.username;
-      let password = this.input.password;
-      let email = this.input.email;
+      const username = this.input.username;
+      const password = this.input.password;
+      const email = this.input.email;
       if (!username || !password || !email) {
-        this.$refs.signUpForm.validate()
+        this.$refs.signUpForm.validate();
         this.snackbar = true;
       } else {
         this.$store.dispatch('createUser', {username, password, email});
@@ -87,10 +87,10 @@ export default Vue.extend({
     },
   },
   computed: {
-    required: function () { 
+    required: function() { 
       return ValidationRules.required;
     },
-    email: function () { 
+    email: function() { 
       return ValidationRules.email;
     },
   }

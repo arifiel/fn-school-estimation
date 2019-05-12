@@ -23,8 +23,8 @@
 
 <script lang="ts">
   export default {
-    name : 'ApproveCr',
-    data: () => ({
+    name: 'ApproveCr',
+    data:() => ({
       closeCrDialog: false,
       crId: '',
     }),

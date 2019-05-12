@@ -110,7 +110,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Vue } from 'vue-property-decorator';
 import {Actions} from '../common/interfaces/Actions';
 import {ICr} from '../common/interfaces/ICr';
 import {CrStatus} from '../common/interfaces/CrStatus';
@@ -128,49 +128,46 @@ export default Vue.extend({
     RejectCr,
     AddAssignee,
   },
-  data () {
-    return {
-      cr_number: '',
-      cr_status: '',
-      cr_project: '',
-      cr_title: '',
-      dialog: false,
-      defaultItem: {
-        title:'',
-        project: {
-          name: '',
-          version: '',
-        },
-        jiraLink:'',
-        task: {
-          title: '',
-          description: '',
-        },
+  data: () => ({
+    cr_number: '',
+    cr_status: '',
+    cr_project: '',
+    cr_title: '',
+    dialog: false,
+    defaultItem: {
+      title:'',
+      project: {
+        name: '',
+        version: '',
       },
-      editedItem: {
-        title:'',
-        project: {
-          name: '',
-          version: '',
-        },
-        jiraLink:'',
-        task: {
-          title: '',
-          description: '',
-        },
+      jiraLink:'',
+      task: {
+        title: '',
+        description: '',
       },
-    };
-  },
+    },
+    editedItem: {
+      title:'',
+      project: {
+        name: '',
+        version: '',
+      },
+      jiraLink:'',
+      task: {
+        title: '',
+        description: '',
+      },
+    },
+  }),
   methods: {
-    formatDate(date: string) : String {
+    formatDate(date: string): String {
       return (new Date(date)).toLocaleDateString();
     },
-    getActions(cr: ICr) : Array<Actions> {
-      if(!this.$store.state.user) {
+    getActions(cr: ICr): Array<Actions> {
+      if(!this.$store.state.user.data) {
         return;
       }
-      let roles = this.$store.state.user.roles as Array<string>;
-      //cr.status
+      const roles = this.$store.state.user.data.roles as Array<string>;
       var result = [];
       if(roles.includes('manager')) {
         switch(cr.status) {
@@ -194,7 +191,7 @@ export default Vue.extend({
       if(roles.includes('worker')) {
         switch(cr.status) {
           case CrStatus.Assigned:
-            if(cr.assigned.map(u => u.id).includes(this.$store.state.user.id)) {
+            if(cr.assigned.map(u => u.id).includes(this.$store.state.user.data.id)) {
               result.push(Actions.Estimate);
             }
             break;
@@ -205,7 +202,7 @@ export default Vue.extend({
       }
       return result;
     },
-    getColor(cr: Actions) : string {
+    getColor(cr: Actions): string {
       switch(cr) {
         case Actions.Inspect:
           return 'yellow';
@@ -226,7 +223,7 @@ export default Vue.extend({
       }
       return 'grey';
     },
-    getIcon(cr: Actions) : string {
+    getIcon(cr: Actions): string {
       switch(cr) {
         case Actions.Inspect:
           return 'description';
@@ -252,12 +249,12 @@ export default Vue.extend({
     },
     addCr() {
       //this.$store.dispatch('loadCrList');
-      let title = this.editedItem.title;
-      let project_name = this.editedItem.project.name;
-      let project_version = this.editedItem.project.version;
-      let jiraLink = this.editedItem.jiraLink;
-      let task_title = this.editedItem.task.title;
-      let task_description = this.editedItem.task.description;
+      const title = this.editedItem.title;
+      const project_name = this.editedItem.project.name;
+      const project_version = this.editedItem.project.version;
+      const jiraLink = this.editedItem.jiraLink;
+      const task_title = this.editedItem.task.title;
+      const task_description = this.editedItem.task.description;
       if (!title || !project_name || !project_version || !task_title || !task_description) {
         this.$refs.newCrForm.validate();
         this.snackbar = true;
@@ -274,7 +271,7 @@ export default Vue.extend({
             title: task_title,
             description: task_description,
           },
-          });
+        });
       }
       this.close();
     },
@@ -282,9 +279,9 @@ export default Vue.extend({
       this.dialog = false;
       this.$refs.newCrForm.reset();
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      }, 300)
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      }, 300);
     },
     clearFilters() {
       this.cr_number = '';
@@ -330,12 +327,12 @@ export default Vue.extend({
     }
   },
   computed: {
-    required: function () { 
+    required: function() { 
       return ValidationRules.required;
     },
-    headers : function () { 
+    headers: function() { 
       var result = [];
-      let smallScreen = this.$vuetify.breakpoint.xs;
+      const smallScreen = this.$vuetify.breakpoint.xs;
       if(smallScreen) {
         return  [
           { text: 'CR Number', value: 'id' },
@@ -353,7 +350,7 @@ export default Vue.extend({
         { text: 'Actions', value: 'actions', sortable: false},
       ];
     },
-    status : function () {
+    status: function() {
       return [
         CrStatus.WaitForApprove,
         CrStatus.Approved,
@@ -364,33 +361,32 @@ export default Vue.extend({
         CrStatus.Rejected,
       ];
     },
-    projects : function () {
+    projects: function() {
       var crList = this.$store.state.crList as Array<ICr>;
       if(!crList) {
         return [];
       }
       return crList.map(cr => cr.project.name);
     },
-    versions : function () {
+    versions: function() {
       var crList = this.$store.state.crList as Array<ICr>;
       if(!crList || !this.editedItem.project.name) {
         return [];
       }
-
       return crList.filter(cr => cr.project.name === this.editedItem.project.name).map(cr => cr.project.version);
     },
-    isArchitect: function () {
-      if(!this.$store.state.user) {
+    isArchitect: function() {
+      if(!this.$store.state.user.data) {
         return false;
       }
-      let roles = this.$store.state.user.roles;
+      const roles = this.$store.state.user.data.roles;
       if(!!roles) {
         return roles.includes('architect');
       }
       return false;
     },
   },
-  beforeMount: function () {
+  beforeMount: function() {
     this.$store.dispatch('loadCrList');
   },
 })

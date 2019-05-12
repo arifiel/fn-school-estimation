@@ -36,10 +36,10 @@
 </template>
 
 <script lang="ts">
-import { ITask } from '../common/interfaces/ITask';
+  import { ITask } from '../common/interfaces/ITask';
 
   export default {
-    name : 'MergeEstimation',
+    name: 'MergeEstimation',
     data: () => ({
       mergeEstimationDialog: false,
       taskId: '',
@@ -54,28 +54,28 @@ import { ITask } from '../common/interfaces/ITask';
         this.mergeEstimationDialog = false;
       },
       estimate() {
-        let taskId = this.taskId;
-        let estimation = this.estimation;
+        const taskId = this.taskId;
+        const estimation = this.estimation;
         this.$store.dispatch('mergeEstimation', {'taskId' : taskId, 'estimation' : estimation});
         this.mergeEstimationDialog = false;
       },
     },
     computed: {
-      estimationList: function () {
+      estimationList: function() {
         if(!this.$store.state.tasksForCr) {
           return [];
         }
-        let task = this.$store.state.tasksForCr.find(t => t.id == this.taskId) as ITask;
+        const task = this.$store.state.tasksForCr.find(t => t.id == this.taskId) as ITask;
         if(!task) {
           return [];
         }
-        let estArr =  ['0', '1', '2', '3', '5', '8', '13', '21', '34', '100', '∞', '?'];
+        const estArr =  ['0', '1', '2', '3', '5', '8', '13', '21', '34', '100', '∞', '?'];
         var firstIndex = undefined;
         var lastIndex = undefined;
-        task.estimationList.map(e => e.value).forEach(v => {
+        task.estimationList.map(e => e.value).forEach(estimationValue => {
           var index = undefined;
-          if(v != '?') {
-            index = estArr.indexOf(v);
+          if(estimationValue != '?') {
+            index = estArr.indexOf(estimationValue);
           }
           if(!firstIndex) {
             firstIndex = index;
@@ -88,10 +88,7 @@ import { ITask } from '../common/interfaces/ITask';
               lastIndex = index;
             }
           }
-
         });
-        console.log(firstIndex);
-        
         if (!firstIndex) {
           return ['0', '1', '2', '3', '5', '8', '13', '21', '34', '100', '∞', '?'];
         }

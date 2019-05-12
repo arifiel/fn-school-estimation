@@ -6,13 +6,13 @@ import router from '@/router/router';
 import {ITask} from '@/common/interfaces/ITask';
 
 export const mutations: MutationTree<RootState> = {
-  setUser(state, payload: IUser) {
-      state.user = payload;
-      router.push('/');
-  },
+  /*setUser(state, payload: IUser) {
+    state.user = payload;
+    router.push('/');
+  },*/
   setUserList(state, payload: Array<IUser>) {
     state.userList = payload;
-},
+  },
   setToken(state, payload: string) {
     state.loggedIn = true;
     state.token = payload;
@@ -25,7 +25,7 @@ export const mutations: MutationTree<RootState> = {
   },
   logout(state) {
     state.loggedIn = false;
-    state.user = undefined;
+    //state.user = undefined;
     state.token = undefined;
     localStorage.removeItem('token');
     router.push('/login');

@@ -171,7 +171,7 @@ import EstimateTask from '../components/EstimateTask.vue';
 import MergeEstimation from '../components/MergeEstimation.vue';
 
 export default Vue.extend({
-  name : 'Inspect',
+  name: 'Inspect',
   components: {
     RemoveTask,
     EstimateTask,
@@ -181,52 +181,50 @@ export default Vue.extend({
     id: String,
     action: String,
   },
-  data () {
-    return {
-      dialog: false,
-      defaultItem: {
-        title: '',
-        description: '',
-      },
-      editedItem: {
-        title: '',
-        description: '',
-      },
-    }
-  },
+  data:() => ({
+    dialog: false,
+    defaultItem: {
+      title: '',
+      description: '',
+    },
+    editedItem: {
+      title: '',
+      description: '',
+    },
+  }),
   methods: {
-    estimation(taskId : string) {
-      let task = this.taskList.filter(t => t.id === taskId)[0];
+    estimation(taskId: string) {
+      const task = this.taskList.filter(t => t.id === taskId)[0];
       if(!task) {
         return undefined;
       }
       if(!task.estimationList) {
         return undefined;
       }
-      let estimation = task.estimationList.find(e => e.userId === this.$store.state.user.id);
+      const estimation = task.estimationList.find(e => e.userId === this.$store.state.user.data.id);
       if(!estimation) {
         return undefined;
       }
       return estimation.value;
 
     },
-    estimationList(task : ITask) {
-      let result = this.crData.assigned as Array<any>;
+    estimationList(task: ITask) {
+      const result = this.crData.assigned as Array<any>;
       if(!task.estimationList) {
         return [];
       }
-      result.forEach(r => r.estimation = task.estimationList.find(e => e.userId === r.id).value)
+      result.forEach(r => r.estimation = task.estimationList.find(e => e.userId === r.id).value);
       return result;
     },
     reload() {
       if(!!this.id) {
-        this.$store.dispatch('loadTasksForCr', this.id)
+        this.$store.dispatch('loadTasksForCr', this.id);
       }
     },
     addTask() {
-      let title = this.editedItem.title;
-      let description = this.editedItem.description;
-      if (!title || !description) {
+      const title = this.editedItem.title;
+      const description = this.editedItem.description;
+      if(!title || !description) {
         this.$refs.newTaskForm.validate();
         this.snackbar = true;
         return;
@@ -245,37 +243,37 @@ export default Vue.extend({
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
-      }, 300)
+      }, 300);
     },
   },
   computed: {
-    required: function () { 
+    required: function() { 
       return ValidationRules.required;
     },
-    crData: function () : ICr { 
+    crData: function(): ICr { 
       if(!!this.$store.state.crList) {
-        return this.$store.state.crList.find(cr => cr.id === this.id)
+        return this.$store.state.crList.find(cr => cr.id === this.id);
       }
     },
-    taskList: function () : Array<ITask> {
+    taskList: function(): Array<ITask> {
       //return this.$store.dispatch('loadTasksForCr', this.id);
       if(!!this.$store.state.tasksForCr) {
         return this.$store.state.tasksForCr;
       }
       return [];
     },
-    isEstimation : function () {
+    isEstimation: function() {
       return this.action === Actions.Estimate.toLowerCase();
     },
-    isMerge : function () {
+    isMerge: function() {
       return this.action === Actions.Merge.toLowerCase();
     },
-    isMergeAllowed : function () {
+    isMergeAllowed: function() {
       return this.isMerge && this.crData.status === CrStatus.WaitForMerge;
     },
-    headers : function () { 
+    headers: function() { 
       var result = [];
-      let smallScreen = this.$vuetify.breakpoint.xs;
+      const smallScreen = this.$vuetify.breakpoint.xs;
       
       if(this.isEstimation || this.isMerge) {
         if(smallScreen) {
@@ -311,7 +309,7 @@ export default Vue.extend({
   },
   beforeMount: function () {
     if(!!this.id) {
-      this.$store.dispatch('loadTasksForCr', this.id)
+      this.$store.dispatch('loadTasksForCr', this.id);
     }
   },
 })

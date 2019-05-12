@@ -23,7 +23,7 @@
 
 <script lang="ts">
   export default {
-    name : 'RemoveTask',
+    name: 'RemoveTask',
     data: () => ({
       removeTaskDialog: false,
       taskId: '',

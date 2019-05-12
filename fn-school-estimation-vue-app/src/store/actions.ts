@@ -9,9 +9,9 @@ export const actions: ActionTree<RootState, RootState> = {
     login(store: ActionContext<RootState, any>, credentials: Credentials) {
       getToken(store, credentials);
     },
-    getUser(store: ActionContext<RootState, any>) {
+    /*getUser(store: ActionContext<RootState, any>) {
       getUser(store);
-    },
+    },*/
     loadCrList(store: ActionContext<RootState, any>) {
       loadCrList(store);
     },
@@ -60,14 +60,14 @@ function getToken(store: ActionContext<RootState, any>, credentials: Credentials
     if(credentials.shouldStayLoggedIn) {
       localStorage.token = response.data;
     }
-    getUser(store);
+    //getUser(store);
   }, (error: any) => {
       console.log(error);
       store.commit('loginError', true);
   });
 }
 
-function getUser(store : ActionContext<RootState, any>) {
+/*function getUser(store : ActionContext<RootState, any>) {
   axios.get(API_URLS.USER, {headers: {'Authorization': 'Bearer ' + store.state.token}})
   .then((response: any) => {
     store.commit('setUser', response.data);
@@ -77,7 +77,7 @@ function getUser(store : ActionContext<RootState, any>) {
       console.log(error);
       store.commit('loginError', true);
   });
-}
+}*/
 
 function getUserList(store : ActionContext<RootState, any>) {
   axios.get(API_URLS.USER_LIST, {headers: {'Authorization': 'Bearer ' + store.state.token}})

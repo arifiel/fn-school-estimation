@@ -6,7 +6,7 @@
         <span v-if='!$vuetify.breakpoint.xs' class="display-1">Estimation tool</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <span v-if="$store.state.user" class="headline">{{$store.state.user.name}}</span>
+      <span v-if="$store.state.user.data" class="headline">{{$store.state.user.data.name}}</span>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn dark icon v-on="on" fab>
@@ -36,11 +36,6 @@ import UrlHelper from './common/util/UrlHelper';
 
 export default {
   name: 'App',
-    data () {
-    return {
-      //
-    }
-  },
   methods: {
     getImageSrc(imageName :string) {
       return UrlHelper.getImageSrc(imageName);
@@ -49,11 +44,25 @@ export default {
       this.$store.commit('logout');
     },
   },
+  computed: {
+    isLoggedIn: function() { 
+      return this.$store.state.loggedIn;
+    },
+  },
   mounted: function () {
     if(this.$store.state.loggedIn) {
-      this.$store.dispatch('getUser');
+      this.$store.dispatch('user/getUser');
+      this.$store.dispatch('getUserList');
     }
   },
+  watch : {
+    isLoggedIn: function (val) {
+      if(val) {
+        this.$store.dispatch('user/getUser');
+        this.$store.dispatch('getUserList');
+      }
+    },
+  }
 }
 </script>
 

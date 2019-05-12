@@ -5,8 +5,6 @@
   >
     <v-card>
       <v-card-title class="headline">Add assignees to CR {{crId}}</v-card-title>
-
-
       <v-card>
         <v-card-text>
           <v-card light >
@@ -74,7 +72,7 @@
 import {IAssignee} from '../common/interfaces/IAssignee';
 
   export default {
-    name : 'AddAssignee',
+    name: 'AddAssignee',
     data: () => ({
       closeCrDialog: false,
       crId: '',
@@ -95,7 +93,7 @@ import {IAssignee} from '../common/interfaces/IAssignee';
         this.closeCrDialog = true;
       },
       removeAssignee(item: IAssignee) {
-        let index = this.assigned.indexOf(item);
+        const index = this.assigned.indexOf(item);
         console.log(index);
         if (index > -1) {
           this.assigned.splice(index, 1);
@@ -105,8 +103,8 @@ import {IAssignee} from '../common/interfaces/IAssignee';
         this.assigned.push(item);
       },
       addAssignees() {
-        let assigned = this.assigned;
-        let crId = this.crId;
+        const assigned = this.assigned;
+        const crId = this.crId;
         this.$store.dispatch('updateAssigneeList', {'crId': crId, 'assigned' : assigned});
         this.closeCrDialog = false;
       },
