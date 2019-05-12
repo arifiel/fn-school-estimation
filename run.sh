@@ -1,1 +1,0 @@
-npm run run-server & npm run run-vue

@@ -5,6 +5,10 @@
   "scripts": {
     "postinstall": "cd fn-school-estimation-vue-app && npm install && cd ../fn-school-estimation-server && npm install && npm run build",
     "run-server": "cd fn-school-estimation-server && npm run serve",
-    "run-vue": "cd fn-school-estimation-vue-app && npm run serve"
+    "run-vue": "cd fn-school-estimation-vue-app && npm run serve",
+	"serve": "concurrently --kill-others \"npm run run-server\" \"npm run run-vue\""
+  },
+  "dependencies": {
+    "concurrently": "^4.1.0"
   }
 }

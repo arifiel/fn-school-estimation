@@ -17,15 +17,10 @@ npm run run-vue
 ```
 
 ## Run server and vue app
-Windows
 ```
-run
+npm run serve
 ```
 
-Unix
-```
-./run.sh
-```
 
 ## Credentials
 Currently, password not stored or checked by server.
