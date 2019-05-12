@@ -69,21 +69,18 @@
 </template>
 
 <script lang="ts">
-import {IAssignee} from '../common/interfaces/IAssignee';
+import {IUserReference} from '../common/interfaces/IUserReference';
 
   export default {
     name: 'AddAssignee',
     data: () => ({
       closeCrDialog: false,
       crId: '',
-      assigned: [] as Array<IAssignee>,
+      assigned: [] as Array<IUserReference>,
     }),
     computed: {
       workerList: function () { 
-        if(!this.$store.state.userList) {
-          return [];
-        }
-        return this.$store.state.userList.filter(u => u.roles.includes('worker')).filter(u => !this.assigned.map(a => a.id).includes(u.id));
+        return this.$store.state.userList.data.filter(u => u.roles.includes('worker')).filter(u => !this.assigned.map(a => a.id).includes(u.id));
       },
     },
     methods: {
@@ -92,14 +89,14 @@ import {IAssignee} from '../common/interfaces/IAssignee';
         this.assigned = Object.assign([], this.$store.state.crList.filter(cr => cr.id === crId)[0].assigned);
         this.closeCrDialog = true;
       },
-      removeAssignee(item: IAssignee) {
+      removeAssignee(item: IUserReference) {
         const index = this.assigned.indexOf(item);
         console.log(index);
         if (index > -1) {
           this.assigned.splice(index, 1);
         }
       },
-      addAssignee(item: IAssignee) {
+      addAssignee(item: IUserReference) {
         this.assigned.push(item);
       },
       addAssignees() {

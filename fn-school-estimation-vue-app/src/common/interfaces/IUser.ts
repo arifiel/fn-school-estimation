@@ -1,5 +1,5 @@
-import {IAssignee} from '@/common/interfaces/IAssignee';
+import {IUserReference} from '@/common/interfaces/IUserReference';
 
-export interface IUser extends IAssignee {
+export interface IUser extends IUserReference {
     roles: string[] | null;
 }

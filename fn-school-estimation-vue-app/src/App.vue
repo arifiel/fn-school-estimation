@@ -51,15 +51,17 @@ export default {
   },
   mounted: function () {
     if(this.$store.state.loggedIn) {
-      this.$store.dispatch('user/getUser');
-      this.$store.dispatch('getUserList');
+      console.log(this.$store.state);
+      
+      this.$store.dispatch('user/load');
+      this.$store.dispatch('userList/load');
     }
   },
   watch : {
     isLoggedIn: function (val) {
       if(val) {
-        this.$store.dispatch('user/getUser');
-        this.$store.dispatch('getUserList');
+        this.$store.dispatch('user/load');
+        this.$store.dispatch('userList/load');
       }
     },
   }

@@ -1,4 +1,4 @@
-export interface IAssignee {
+export interface IUserReference {
     id: string;
     name: string;
 }

@@ -9,9 +9,6 @@ export const actions: ActionTree<RootState, RootState> = {
     login(store: ActionContext<RootState, any>, credentials: Credentials) {
       getToken(store, credentials);
     },
-    /*getUser(store: ActionContext<RootState, any>) {
-      getUser(store);
-    },*/
     loadCrList(store: ActionContext<RootState, any>) {
       loadCrList(store);
     },
@@ -36,9 +33,6 @@ export const actions: ActionTree<RootState, RootState> = {
     rejectCr(store: ActionContext<RootState, any>, crId: string) {
       rejectCr(store, crId);
     },
-    getUserList(store: ActionContext<RootState, any>) {
-      getUserList(store);
-    },
     updateAssigneeList(store: ActionContext<RootState, any>, data: any) {
       updateAssigneeList(store, data);
     },
@@ -60,31 +54,9 @@ function getToken(store: ActionContext<RootState, any>, credentials: Credentials
     if(credentials.shouldStayLoggedIn) {
       localStorage.token = response.data;
     }
-    //getUser(store);
   }, (error: any) => {
       console.log(error);
       store.commit('loginError', true);
-  });
-}
-
-/*function getUser(store : ActionContext<RootState, any>) {
-  axios.get(API_URLS.USER, {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    store.commit('setUser', response.data);
-    store.commit('loginError', false);
-    getUserList(store);
-  }, (error: any) => {
-      console.log(error);
-      store.commit('loginError', true);
-  });
-}*/
-
-function getUserList(store : ActionContext<RootState, any>) {
-  axios.get(API_URLS.USER_LIST, {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    store.commit('setUserList', response.data);
-  }, (error: any) => {
-      console.log(error);
   });
 }
 

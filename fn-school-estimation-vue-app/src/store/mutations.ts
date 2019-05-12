@@ -6,13 +6,9 @@ import router from '@/router/router';
 import {ITask} from '@/common/interfaces/ITask';
 
 export const mutations: MutationTree<RootState> = {
-  /*setUser(state, payload: IUser) {
-    state.user = payload;
-    router.push('/');
-  },*/
-  setUserList(state, payload: Array<IUser>) {
+  /*setUserList(state, payload: Array<IUser>) {
     state.userList = payload;
-  },
+  },*/
   setToken(state, payload: string) {
     state.loggedIn = true;
     state.token = payload;
