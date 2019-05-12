@@ -34,7 +34,7 @@
         this.closeCrDialog = true;
       },
       closeCr() {
-        this.$store.dispatch('closeCr', this.crId);
+        this.$store.dispatch('cr/close', this.crId);
         this.closeCrDialog = false;
       },
     }

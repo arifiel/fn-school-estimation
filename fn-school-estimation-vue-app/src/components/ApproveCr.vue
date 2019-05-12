@@ -34,7 +34,7 @@
         this.closeCrDialog = true;
       },
       approveCr() {
-        this.$store.dispatch('approveCr', this.crId);
+        this.$store.dispatch('cr/approve', this.crId);
         this.closeCrDialog = false;
       },
     }

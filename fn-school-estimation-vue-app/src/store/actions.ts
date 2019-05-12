@@ -15,18 +15,6 @@ export const actions: ActionTree<RootState, RootState> = {
     createUser(store: ActionContext<RootState, any>, credentials: Credentials) {
       createUser(store, credentials);
     },
-    createCr(store: ActionContext<RootState, any>, crdata: any) {
-      createCr(store, crdata);
-    },
-    closeCr(store: ActionContext<RootState, any>, crId: string) {
-      closeCr(store, crId);
-    },
-    approveCr(store: ActionContext<RootState, any>, crId: string) {
-      approveCr(store, crId);
-    },
-    rejectCr(store: ActionContext<RootState, any>, crId: string) {
-      rejectCr(store, crId);
-    },
     updateAssigneeList(store: ActionContext<RootState, any>, data: any) {
       updateAssigneeList(store, data);
     },
@@ -61,42 +49,6 @@ function createUser(store : ActionContext<RootState, any> , credentials: Credent
     })
   .then((response: any) => {
     getToken(store, credentials);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function createCr(store : ActionContext<RootState, any> , crdata: any) {
-  axios.post(API_URLS.CREATE_CR, {body: crdata}, {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    loadCrList(store);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function closeCr(store : ActionContext<RootState, any> , crId: string) {
-  axios.patch(API_URLS.CLOSE_CR.replace('${crId}', crId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    loadCrList(store);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function approveCr(store : ActionContext<RootState, any> , crId: string) {
-  axios.patch(API_URLS.APPROVE_CR.replace('${crId}', crId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    loadCrList(store);
-  }, (error: any) => {
-      console.log(error);
-  });
-}
-
-function rejectCr(store : ActionContext<RootState, any> , crId: string) {
-  axios.patch(API_URLS.REJECT_CR.replace('${crId}', crId), {headers: {'Authorization': 'Bearer ' + store.state.token}})
-  .then((response: any) => {
-    loadCrList(store);
   }, (error: any) => {
       console.log(error);
   });

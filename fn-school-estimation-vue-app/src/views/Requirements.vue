@@ -233,6 +233,9 @@ export default Vue.extend({
     required: function() { 
       return ValidationRules.required;
     },
+    crStateUpdating: function() { 
+      return this.$store.state.cr.loading;
+    },
     headers: function() { 
       var result = [];
       const smallScreen = this.$vuetify.breakpoint.xs;
@@ -287,6 +290,13 @@ export default Vue.extend({
         return roles.includes('architect');
       }
       return false;
+    },
+  },
+  watch : {
+    crStateUpdating: function (val) {
+      if(!val) {
+        this.$store.dispatch('loadCrList');
+      }
     },
   },
   beforeMount: function() {

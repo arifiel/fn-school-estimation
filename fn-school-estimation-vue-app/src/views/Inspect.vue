@@ -261,7 +261,7 @@ export default Vue.extend({
       if(!!this.$store.state.cr.data) {
         return this.$store.state.cr.data;
       } else {
-        return {} as ICr;
+        return {owner: '', project: ''} as ICr;
       }
     },
     taskList: function(): Array<ITask> {

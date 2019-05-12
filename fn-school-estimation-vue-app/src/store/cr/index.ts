@@ -8,6 +8,7 @@ import { RootState } from '../types';
 
 export const state: CrState = {
   data: undefined,
+  loading: false,
   error: false
 };
 

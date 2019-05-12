@@ -112,7 +112,7 @@ import ValidationRules from '../common/util/ValidationRules';
           this.snackbar = true;
           return;
         } else {
-          this.$store.dispatch('createCr', {
+          this.$store.dispatch('cr/create', {
             title: title,
             project: {
               name: project_name,
