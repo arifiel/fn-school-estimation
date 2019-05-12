@@ -1,10 +1,12 @@
 <template>
   <v-app dark>
     <v-toolbar app v-if="$store.state.loggedIn">
-      <v-toolbar-title class="headline text-uppercase">
-        <v-img class="logo-image" :src="getImageSrc('epsilon.png')"></v-img>
-        <span v-if='!$vuetify.breakpoint.xs' class="display-1">Estimation tool</span>
-      </v-toolbar-title>
+      <router-link to='/' title='Move to CR list' class="header_text">
+        <v-toolbar-title class="headline text-uppercase">
+          <v-img class="logo-image" :src="getImageSrc('epsilon.png')"></v-img>
+          <span v-if='!$vuetify.breakpoint.xs' class="display-1">Estimation tool</span>
+        </v-toolbar-title>
+      </router-link>
       <v-spacer></v-spacer>
       <span v-if="$store.state.user.data" class="headline">{{$store.state.user.data.name}}</span>
       <v-menu offset-y>
@@ -83,6 +85,10 @@ export default {
   background: #808080;
   margin: 5px;
   color: white;
+
+.header_text
+  color: white;
+  text-decoration: none;
 
 </style>
 

@@ -36,6 +36,8 @@
 </template>
 
 <script lang="ts">
+import {Estimation} from '../common/interfaces/Estimation';
+
   export default {
     name : 'EstimateTask',
     data: () => ({
@@ -44,12 +46,14 @@
       estimation: undefined,
     }),
     methods: {
-      openDialog(taskId: string) {
+      openDialog(taskId: string, estimation: Estimation) {
         this.taskId = taskId;
         this.estimateTaskDialog = true;
-      },
-      closeCr() {
-        this.estimateTaskDialog = false;
+        if(!!estimation) {
+          this.estimation = estimation;
+        } else {
+          this.estimation = undefined;
+        }
       },
       estimate() {
         let taskId = this.taskId;

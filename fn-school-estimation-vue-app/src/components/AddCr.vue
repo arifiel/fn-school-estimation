@@ -90,7 +90,7 @@ import ValidationRules from '../common/util/ValidationRules';
           return [];
         }
         return crList.filter(cr => cr.project.name === this.editedItem.project.name).map(cr => cr.project.version);
-    },
+      },
     },
     methods: {
       openDialog(crId: string) {

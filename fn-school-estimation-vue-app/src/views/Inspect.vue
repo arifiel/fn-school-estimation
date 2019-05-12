@@ -3,6 +3,7 @@
     <RemoveTask ref="removeTask"/>
     <EstimateTask ref="estimateTask"/>
     <MergeEstimation ref="mergeEstimation"/>
+    <AddTask ref="addTask"/>
 
     <v-flex class='text-xs-center display-1'>
       <span>Requirement description</span>
@@ -86,35 +87,9 @@
       <v-spacer></v-spacer>
       <v-card light>
         <v-layout row>
-          <v-dialog v-model="dialog" max-width="500px" >
-            <template v-slot:activator="{ on }">
-              <v-btn icon class="mb-2" v-on="on" title='Add Task'>
-                <v-icon large>add_circle</v-icon>
-              </v-btn>
-            </template>
-            <v-form  @submit.prevent="addTask" ref="newTaskForm">
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Create new Task</span>
-                </v-card-title>
-                <v-card-text>
-                  <v-card light>
-                    <v-card-text>
-                      <v-text-field v-model="editedItem.title" label="Title" :rules="[required(editedItem.title)]"></v-text-field>
-                      <v-textarea v-model="editedItem.description" label="Description" :rules="[required(editedItem.description)]"></v-textarea>
-                    </v-card-text>
-                  </v-card>
-                </v-card-text>
-                <v-card-actions>
-                  <v-card-text class="text-xs-right">
-                    <v-spacer></v-spacer>
-                    <v-btn light type='submit'>Save</v-btn>
-                    <v-btn @click="close">Cancel</v-btn>
-                  </v-card-text>
-                </v-card-actions>
-              </v-card>
-            </v-form>  
-          </v-dialog>
+          <v-btn icon class="mb-2" @click="$refs.addTask.openDialog(id);" title='Add Task'>
+            <v-icon large>add_circle</v-icon>
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn icon @click="reload" title='Reload Task list'>
             <v-icon large>cached</v-icon>
@@ -127,7 +102,8 @@
             <td class="text-xs-left">{{ props.item.title }}</td>
             <td v-if="!$vuetify.breakpoint.xs" class="text-xs-left">{{ props.item.description }}</td>
             <td class="text-xs-left" v-if="isEstimation">
-              <v-btn icon @click="$refs.estimateTask.openDialog(props.item.id);" title='tasksForCr/Estimate' :color="!estimation(props.item.id) ? 'blue' : 'green'">
+              <v-btn icon @click="$refs.estimateTask.openDialog(props.item.id, estimation(props.item.id));"
+                  title='tasksForCr/Estimate' :color="!estimation(props.item.id) ? 'blue' : 'green'">
                 <v-icon v-if="!estimation(props.item.id)">hourglass_empty</v-icon>
                 <span v-else v-text="estimation(props.item.id)"></span>
               </v-btn>  
@@ -169,6 +145,7 @@ import ValidationRules from '../common/util/ValidationRules';
 import RemoveTask from '../components/RemoveTask.vue';
 import EstimateTask from '../components/EstimateTask.vue';
 import MergeEstimation from '../components/MergeEstimation.vue';
+import AddTask from '../components/AddTask.vue';
 
 export default Vue.extend({
   name: 'Inspect',
@@ -176,6 +153,7 @@ export default Vue.extend({
     RemoveTask,
     EstimateTask,
     MergeEstimation,
+    AddTask,
   },
   props: {
     id: String,
@@ -183,14 +161,6 @@ export default Vue.extend({
   },
   data:() => ({
     dialog: false,
-    defaultItem: {
-      title: '',
-      description: '',
-    },
-    editedItem: {
-      title: '',
-      description: '',
-    },
   }),
   methods: {
     estimation(taskId: string) {
@@ -221,22 +191,6 @@ export default Vue.extend({
         this.$store.dispatch('tasksForCr/load', this.id);
         this.$store.dispatch('cr/load', this.id);
       }
-    },
-    addTask() {
-      const title = this.editedItem.title;
-      const description = this.editedItem.description;
-      if(!title || !description) {
-        this.$refs.newTaskForm.validate();
-        this.snackbar = true;
-        return;
-      } else {
-        this.$store.dispatch('tasksForCr/create', {
-          cr_id: this.id,
-          title: title,
-          description: description,
-        });
-      }
-      this.close();
     },
     close() {
       this.dialog = false;
